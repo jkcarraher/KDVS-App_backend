@@ -1,0 +1,35 @@
+name: Continuous Deployment (CD)
+
+on:
+  push:
+    branches:
+      - prod # Triggers the workflow only when pushing or merging to 'prod'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: Executing Remote SSH Commands via Passwordless SSH Key
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # 1. Navigate to your project directory
+            cd ~/portfolio-backend
+            
+            # 2. Reset any local changes and fetch the latest code from the prod branch
+            git reset --hard
+            git checkout prod
+            git pull origin prod
+            
+            # 3. Rebuild and restart the container stack gracefully without downtime
+            # --build ensures your NestJS image updates with the new code
+            # -d runs it back in detached mode
+            docker compose up -d --build
