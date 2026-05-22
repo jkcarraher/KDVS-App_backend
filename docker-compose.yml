@@ -3,7 +3,7 @@ services:
     image: postgres:16-alpine
     restart: always
     environment:
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     container_name: db
     volumes:
       - pgdata:/var/lib/postgresql
@@ -20,6 +20,11 @@ services:
     container_name: backend
     environment:
       - PORT=${BACKEND_PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}  # Passes your DB password here
+      - DB_DATABASE=${DB_DATABASE}
     ports:
       - '3000:3000'
     depends_on:
@@ -35,7 +40,8 @@ services:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:
