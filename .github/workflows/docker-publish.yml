@@ -3,7 +3,7 @@ name: Continuous Deployment (CD)
 on:
   push:
     branches:
-      - prod # Triggers the workflow only when pushing or merging to 'prod'
+      - prod
 
 jobs:
   deploy:
