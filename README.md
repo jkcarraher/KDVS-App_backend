@@ -17,3 +17,13 @@ $ bun run start:dev
 # production mode
 $ bun run start:prod
 ```
+
+## Build docker container
+
+```bash
+# Start
+$ docker compose up --build
+
+# Stop
+$ docker compose down
+```
