@@ -20,10 +20,8 @@ export class ShowScraperService {
       const start = new Date(item.start);
       const end = new Date(item.end);
 
-      const spinitronId = item.show_id ?? item.id;
-
       return {
-        spinitron_id: spinitronId,
+        id: item.show_id,
         name: item.title,
         show_url: item._links?.self?.href ?? null,
         playlist_image_url: item.image ?? null,

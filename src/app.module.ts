@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ShowsModule } from './shows/shows.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { Season, Show } from './entities/show.entity';
+import { ShowTimeslot } from './entities/show-timeslot.entity';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: 'postgres',
-      entities: [],
+      entities: [Show, Season, ShowTimeslot],
       synchronize: true,
       autoLoadEntities: true,
     }),
