@@ -10,30 +10,14 @@ export class ShowScraperService {
     private readonly showRepository: Repository<Show>,
   ) {}
 
-  async fetchShowsAndUpdateDB() {
-    const res = await fetch('https://kdvs.org/api/spinitron/schedule?offset=0');
-    const data = await res.json();
+  async fetchShowsAndUpdateDB(seasonId: number) {
+    if (!seasonId) { throw new Error('Must pass in seasonId to know what dateRange to query') }
 
-    const scheduleItems = [...(data.future ?? []), ...(data.past ?? [])];
+    // Fetch this season's date range, convert that to a range of offsets from "today in PST"
 
-    const showEntities = scheduleItems.map((item: any) => {
-      const start = new Date(item.start);
-      const end = new Date(item.end);
+    // Make API calls for that offset range past, present & future -60,0,60
 
-      return {
-        id: item.show_id,
-        name: item.title,
-        show_url: item._links?.self?.href ?? null,
-        playlist_image_url: item.image ?? null,
-        start_time: start.toISOString().slice(11, 19),
-        end_time: end.toISOString().slice(11, 19),
-        current_dotw: start.toLocaleDateString('en-US', { weekday: 'long', timeZone: item.timezone }),
-        show_dates: [start.toISOString().slice(0, 10)],
-        first_show_date: start.toISOString().slice(0, 10),
-        last_show_date: start.toISOString().slice(0, 10),
-        alternates: false,
-      } as Partial<Show>;
-    });
+    // This should give us a list of API Show objects from which we can build a list of Show Objects to insert into the DB
 
     await this.showRepository.save(showEntities);
   }
