@@ -8,6 +8,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { Show } from './entities/show.entity';
 import { ShowTimeslot } from './entities/show-timeslot.entity';
 import { Season } from './entities/season.entity';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { Season } from './entities/season.entity';
       autoLoadEntities: true,
     }),
     ShowsModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
