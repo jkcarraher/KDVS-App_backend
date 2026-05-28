@@ -1,0 +1,34 @@
+
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Season } from '../entities/season.entity';
+
+@Injectable()
+export class SeasonsService {
+  constructor(
+    @InjectRepository(Season)
+    private readonly seasonRepository: Repository<Season>,
+  ) {}
+
+  findAll(): Promise<Season[]> {
+    return this.seasonRepository.find();
+  }
+
+  findOne(id: number): Promise<Season | null> {
+    return this.seasonRepository.findOneBy({ id });
+  }
+
+  create(season: Partial<Season>): Promise<Season> {
+    const newSeason = this.seasonRepository.create(season);
+    return this.seasonRepository.save(newSeason);
+  }
+
+  update(id: number, season: Partial<Season>): Promise<Season> {
+    return this.seasonRepository.save({ ...season, id });
+  }
+
+  remove(id: number): Promise<void> {
+    return this.seasonRepository.delete(id).then(() => {});
+  }
+}
