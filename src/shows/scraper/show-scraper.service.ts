@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { Show } from "../../entities/show.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { fetchSchedulePages, flattenScheduleResponses, mapScheduleItemsToUniqueShows } from "./show-scraper.helpers";
 
 @Injectable()
 export class ShowScraperService {
@@ -15,10 +16,12 @@ export class ShowScraperService {
 
     // Fetch this season's date range, convert that to a range of offsets from "today in PST"
 
-    // Make API calls for that offset range past, present & future -60,0,60
+    // Make API calls for that offset range past, present & future
+    const zShows = flattenScheduleResponses( await fetchSchedulePages() )
 
     // This should give us a list of API Show objects from which we can build a list of Show Objects to insert into the DB
+    const uniqueShows = mapScheduleItemsToUniqueShows(zShows)
 
-    await this.showRepository.save(showEntities);
+    await this.showRepository.save(uniqueShows);
   }
 }
