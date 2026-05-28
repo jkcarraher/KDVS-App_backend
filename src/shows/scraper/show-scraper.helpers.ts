@@ -29,10 +29,10 @@ export function flattenScheduleResponses(responses: zScheduleResponse[]): zSched
 export function mapScheduleItemsToUniqueShows(
   items: zScheduleItem[],
 ): Partial<Show>[] {
-  const showsById = new Map<number, Partial<Show>>();
+  const showsById = new Map<String, Partial<Show>>();
 
   for (const item of items) {
-    const showId = (item as any).show_id ?? item.id;
+    const showId = String(item.id);
     if (!showId) continue;
 
     if (!showsById.has(showId)) {

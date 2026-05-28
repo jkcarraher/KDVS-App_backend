@@ -4,15 +4,18 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 
 @Entity({name: 'shows'})
 export class Show {
   @PrimaryGeneratedColumn()
   id!: number
-
+  
+  
+  @Index({ unique: true })
   @Column({type: 'varchar'})
-  spinitron_show_id!: number
+  spinitron_show_id!: string
 
   @Column({type: 'varchar'})
   name!: string;
