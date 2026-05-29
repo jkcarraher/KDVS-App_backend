@@ -56,7 +56,6 @@ export class SeasonGenService {
       name: QuarterName;
       startDate: Date;
       seasonYear: number;
-      durationWeeks?: number;
     }> = [
       {
         name: 'Fall',
@@ -77,15 +76,14 @@ export class SeasonGenService {
         name: 'Summer',
         startDate: this.getSummerStartDate(academicYear + 1),
         seasonYear: academicYear + 1,
-        durationWeeks: 10,
       },
     ];
 
-    return quarterConfigs.map(({ name, startDate, seasonYear, durationWeeks }, index) => {
+    return quarterConfigs.map(({ name, startDate, seasonYear }, index) => {
       const nextStart = quarterConfigs[index + 1]?.startDate;
       const endDate = nextStart
         ? this.addDays(nextStart, -1)
-        : this.addDays(startDate, (durationWeeks ?? 10) * 7 - 1);
+        : this.addDays(this.getFallStartDate(academicYear + 1), -1);
 
       return {
         name: `${name} ${seasonYear}`,
