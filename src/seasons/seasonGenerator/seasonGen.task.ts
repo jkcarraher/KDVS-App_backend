@@ -35,15 +35,8 @@ export class SeasonGenTask implements OnApplicationBootstrap {
   private getCurrentAcademicYear(): number {
     const today = new Date();
     const currentYear = today.getUTCFullYear();
-    const fallStart = this.getDefaultFallStart(currentYear);
+    const fallStart = this.seasonGen.getFallStartDate(currentYear);
 
     return today < fallStart ? currentYear - 1 : currentYear;
-  }
-
-  private getDefaultFallStart(year: number): Date {
-    const septFirst = new Date(Date.UTC(year, 8, 1));
-    const dayOfWeek = septFirst.getUTCDay();
-    const offset = ((1 - dayOfWeek + 7) % 7) + 14;
-    return new Date(Date.UTC(year, 8, 1 + offset));
   }
 }

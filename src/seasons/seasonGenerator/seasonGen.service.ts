@@ -48,44 +48,84 @@ export class SeasonGenService {
     fallStartDate?: string,
   ): AcademicSeasonInput[] {
     const fallStart =
-      fallStartDate != null ? new Date(fallStartDate) : this.defaultFallStart(academicYear);
+      fallStartDate != null
+        ? this.alignToMonday(new Date(fallStartDate))
+        : this.getFallStartDate(academicYear);
 
-    const quarterLengths = [11, 10, 10, 10]; // weeks
-    const quarterNames: QuarterName[] = ['Fall', 'Winter', 'Spring', 'Summer'];
+    const quarterConfigs: Array<{
+      name: QuarterName;
+      startDate: Date;
+      seasonYear: number;
+      durationWeeks?: number;
+    }> = [
+      {
+        name: 'Fall',
+        startDate: fallStart,
+        seasonYear: academicYear,
+      },
+      {
+        name: 'Winter',
+        startDate: this.getWinterStartDate(academicYear + 1),
+        seasonYear: academicYear + 1,
+      },
+      {
+        name: 'Spring',
+        startDate: this.getSpringStartDate(academicYear + 1),
+        seasonYear: academicYear + 1,
+      },
+      {
+        name: 'Summer',
+        startDate: this.getSummerStartDate(academicYear + 1),
+        seasonYear: academicYear + 1,
+        durationWeeks: 10,
+      },
+    ];
 
-    const seasons: AcademicSeasonInput[] = [];
-    let currentStart = this.alignToMonday(fallStart);
+    return quarterConfigs.map(({ name, startDate, seasonYear, durationWeeks }, index) => {
+      const nextStart = quarterConfigs[index + 1]?.startDate;
+      const endDate = nextStart
+        ? this.addDays(nextStart, -1)
+        : this.addDays(startDate, (durationWeeks ?? 10) * 7 - 1);
 
-    for (let index = 0; index < quarterNames.length; index += 1) {
-      const name = quarterNames[index];
-      const weeks = quarterLengths[index];
-      const provisionalEnd = this.addDays(currentStart, weeks * 7 - 1);
-      const endDate = this.alignToSunday(provisionalEnd);
-
-      seasons.push({
-        name: `${name} ${this.seasonYear(academicYear, name)}`,
-        start_date: this.formatDate(currentStart),
+      return {
+        name: `${name} ${seasonYear}`,
+        start_date: this.formatDate(startDate),
         end_date: this.formatDate(endDate),
-      });
+      };
+    });
+  }
 
-      currentStart = this.nextMonday(endDate);
+  public getFallStartDate(academicYear: number): Date {
+    const candidate = new Date(Date.UTC(academicYear, 8, 24));
+    return this.alignToPreviousMonday(candidate);
+  }
+
+  public getWinterStartDate(year: number): Date {
+    const candidate = new Date(Date.UTC(year, 0, 2));
+    return this.alignToMonday(candidate);
+  }
+
+  public getSpringStartDate(year: number): Date {
+    const lastMonday = this.getLastMondayInMonth(year, 2);
+    if (lastMonday.getUTCDate() === 31) {
+      return this.addDays(lastMonday, 7);
     }
-
-    return seasons;
+    return lastMonday;
   }
 
-  private seasonYear(academicYear: number, name: QuarterName): number {
-    if (name === 'Fall') return academicYear;
-    return academicYear + 1;
+  public getSummerStartDate(year: number): Date {
+    const firstMonday = this.getNthMondayInMonth(year, 5, 1);
+    return this.addDays(firstMonday, 21);
   }
 
-  private defaultFallStart(academicYear: number): Date {
-    // UC Davis Fall quarter typically begins in late September.
-    // This finds the third Monday of September as a reasonable default.
-    const septFirst = new Date(Date.UTC(academicYear, 8, 1));
-    const dayOfWeek = septFirst.getUTCDay();
-    const offset = ((1 - dayOfWeek + 7) % 7) + 14;
-    return new Date(Date.UTC(academicYear, 8, 1 + offset));
+  private getLastMondayInMonth(year: number, month: number): Date {
+    const lastDay = new Date(Date.UTC(year, month + 1, 0));
+    return this.alignToPreviousMonday(lastDay);
+  }
+
+  private getNthMondayInMonth(year: number, month: number, n: number): Date {
+    const firstOfMonth = new Date(Date.UTC(year, month, 1));
+    return this.addDays(this.alignToMonday(firstOfMonth), 7 * (n - 1));
   }
 
   private alignToMonday(date: Date): Date {
@@ -97,18 +137,21 @@ export class SeasonGenService {
     return result;
   }
 
+  private alignToPreviousMonday(date: Date): Date {
+    const result = new Date(date);
+    const day = result.getUTCDay();
+    if (day === 1) return result;
+    const delta = (day + 6) % 7;
+    result.setUTCDate(result.getUTCDate() - delta);
+    return result;
+  }
+
   private alignToSunday(date: Date): Date {
     const result = new Date(date);
     const day = result.getUTCDay();
     const delta = (7 - day) % 7;
     result.setUTCDate(result.getUTCDate() + delta);
     return result;
-  }
-
-  private nextMonday(date: Date): Date {
-    const result = new Date(date);
-    result.setUTCDate(result.getUTCDate() + 1);
-    return this.alignToMonday(result);
   }
 
   private addDays(date: Date, days: number): Date {
