@@ -15,8 +15,8 @@ export class ShowTimeslot {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: 'varchar' })
-  show_id!: string;
+  @Column({ type: 'bigint' })
+  show_id!: number;
 
   @ManyToOne(() => Show, { nullable: false })
   @JoinColumn({ name: 'show_id' })

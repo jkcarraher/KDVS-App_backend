@@ -4,30 +4,27 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  Index,
 } from 'typeorm';
 
-@Entity({name: 'shows'})
+@Entity({ name: 'shows' })
 export class Show {
-  @PrimaryGeneratedColumn()
-  id!: number
-  
-  
-  @Index({ unique: true })
-  @Column({type: 'varchar'})
-  spinitron_show_id!: string
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id!: number;
 
-  @Column({type: 'varchar'})
+  @Column({ type: 'varchar' })
   name!: string;
 
-  @Column({type: 'varchar'})
+  @Column({ type: 'varchar' })
   catagory!: string;
 
-  @Column({type: 'varchar'})
-  spinitron_url!: string;
+  @Column('text', { array: true, default: () => "'{}'" })
+  spinitron_ids!: string[];
 
-  @Column({type: 'varchar'})
-  image_url!: string;
+  @Column({ type: 'varchar', nullable: true })
+  spinitron_url?: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  image_url?: string;
 
   @CreateDateColumn({
     type: 'date',

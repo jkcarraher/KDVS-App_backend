@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe } from '@nestjs/common';
 import { ShowsService } from './shows.service';
 import { Show } from '../entities/show.entity';
 
@@ -13,7 +13,7 @@ export class ShowsController {
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: number): Promise<Show | null> {
+	findOne(@Param('id', ParseIntPipe) id: number): Promise<Show | null> {
 		return this.showsService.findOne(id);
 	}
 
@@ -23,12 +23,12 @@ export class ShowsController {
 	}
 
 	@Put(':id')
-	update(@Param('id') id: number, @Body() show: Partial<Show>): Promise<Show> {
+	update(@Param('id', ParseIntPipe) id: number, @Body() show: Partial<Show>): Promise<Show> {
 		return this.showsService.update(id, show);
 	}
 
 	@Delete(':id')
-	remove(@Param('id') id: number): Promise<void> {
+	remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
 		return this.showsService.remove(id);
 	}
 }

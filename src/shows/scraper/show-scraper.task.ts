@@ -8,9 +8,17 @@ export class ShowScraperTask {
 
   constructor(private readonly showScraper: ShowScraperService) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleDailyJob() {
     this.logger.log("Show scraper cron job started")
-    await this.showScraper.fetchShowsAndUpdateDB();
+
+    const season = await this.showScraper.getCurrentSeason();
+
+    if (!season) {
+      this.logger.warn('No current season found for show scraper.');
+      return;
+    }
+
+    await this.showScraper.fetchShowsAndUpdateDB(season);
   }
 }

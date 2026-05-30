@@ -29,19 +29,18 @@ export function flattenScheduleResponses(responses: zScheduleResponse[]): zSched
 export function mapScheduleItemsToUniqueShows(
   items: zScheduleItem[],
 ): Partial<Show>[] {
-  const showsById = new Map<String, Partial<Show>>();
+  const showsById = new Map<string, Partial<Show>>();
 
   for (const item of items) {
     const showId = String(item.id);
-    if (!showId) continue;
-
+    const normalizedName = item.title?.trim() ?? '';
     if (!showsById.has(showId)) {
       showsById.set(showId, {
-        spinitron_show_id: showId,
-        name: item.title,
-        catagory: item.category,
+        name: normalizedName,
+        catagory: item.category?.trim() ?? '',
         spinitron_url: item._links.self.href,
         image_url: item.image ?? '',
+        spinitron_ids: [showId],
       });
     }
   }
