@@ -20,12 +20,19 @@ export class SeasonsService {
   }
 
   create(season: Partial<Season>): Promise<Season> {
-    const newSeason = this.seasonRepository.create(season);
+    const newSeason = this.seasonRepository.create({
+      ...season,
+      is_auto_generated: season.is_auto_generated ?? false,
+    });
     return this.seasonRepository.save(newSeason);
   }
 
   update(id: number, season: Partial<Season>): Promise<Season> {
-    return this.seasonRepository.save({ ...season, id });
+    return this.seasonRepository.save({
+      ...season,
+      id,
+      is_auto_generated: season.is_auto_generated ?? false,
+    });
   }
 
   remove(id: number): Promise<void> {
