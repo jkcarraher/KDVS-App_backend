@@ -34,33 +34,19 @@ export function getDayNumberFromDateString(dateString: string): number {
 }
 
 export function mergeZShowIntoShowMap(
-  showsByName: Map<string, Partial<Show>>,
+  showsById: Map<number, Partial<Show>>,
   item: zScheduleItem,
 ): void {
-  const spinitronId = String(item.id);
-  const showName = String(item.title);
+  const showId = item.show_id ? item.show_id : item.id;
+  
+  const existing = showsById.get(showId);
 
-  const existing = showsByName.get(showName);
-
-  if (existing) {
-    const existingIds = existing.spinitron_ids ?? [];
-    if (!existingIds.includes(spinitronId)) {
-      existing.spinitron_ids = [...existingIds, spinitronId];
-    }
-
-    if (!existing.image_url && item.image) {
-      existing.image_url = item.image;
-    }
-
-    if (!existing.catagory && item.category) {
-      existing.catagory = item.category.trim();
-    }
-  } else {
-    showsByName.set(showName, {
-      name: showName,
+  if (!existing) {
+    showsById.set(showId, {
+      id: showId,
+      name: item.title,
       catagory: item.category?.trim() ?? '',
       image_url: item.image ?? '',
-      spinitron_ids: [ spinitronId ],
     });
   }
 }

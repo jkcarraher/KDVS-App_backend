@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Show } from '../entities/show.entity';
 
 @Injectable()
@@ -31,4 +31,31 @@ export class ShowsService {
 	remove(id: number): Promise<void> {
 		return this.showRepository.delete(id).then(() => {});
 	}
+
+	async batchInsertNewShows(shows: Partial<Show>[]): Promise<Show[]> {
+    const showIds = shows
+      .map((show) => show.id)
+      .filter((id): id is number => id != null)
+      .map(Number);
+
+    if (showIds.length === 0) {
+      return [];
+    }
+
+    const existingShows = await this.showRepository.findBy({
+      id: In(showIds),
+    });
+
+    const existingIds = new Set(existingShows.map((show) => Number(show.id)));
+
+    const newShows = shows.filter(
+      (show) => show.id != null && !existingIds.has(Number(show.id)),
+    );
+
+    if (newShows.length === 0) {
+      return [];
+    }
+
+    return this.showRepository.save(newShows);
+  }
 }

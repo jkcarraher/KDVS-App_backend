@@ -18,26 +18,6 @@ export class ShowScraperTask {
   async handleDailyJob() {
     this.logger.log("Show scraper cron job started")
 
-    // Get the current Season if any
-    const season = await this.showScraper.getCurrentSeason();
-    if (!season) {
-      this.logger.warn('No current season found for show scraper.');
-      return;
-    }
-
-    // Get KDVS' zShows
-    const zShows = await fetchZShowsForSeason(season)
-    
-    // Keep a map of Show objects unique by their Name (key of map is ShowName).
-    const uniqueShows = new Map<string, Partial<Show>>();
-    const uniquePersonaIds = new Set<string>();
-    const uniqueTimeslots = new Map<string, Map<string, Partial<ShowTimeslot>>>;
-
-    for (const zShow of zShows) {
-      mergeZShowIntoShowMap(uniqueShows, zShow)
-      extractZShowPersonaIds(uniquePersonaIds, zShow)
-      appendZShowTimeslotByShowName(uniqueTimeslots, zShow, season)
-    }
-    this.logger.log(uniqueTimeslots)
+    this.showScraper.updateDB()
   }
 }

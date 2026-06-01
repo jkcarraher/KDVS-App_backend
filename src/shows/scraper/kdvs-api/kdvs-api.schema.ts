@@ -2,11 +2,12 @@ import { z } from 'zod';
 
 export const scheduleItemSchema = z.object({
   id: z.number(),
+  show_id: z.number().nullable().optional(),
   start: z.string(),
   end: z.string(),
   duration: z.number(),
   timezone: z.string(),
-  one_off: z.boolean().optional(),
+  one_off: z.boolean().nullable().optional(),
   category: z.string(),
   title: z.string(),
   image: z.string().nullable(),

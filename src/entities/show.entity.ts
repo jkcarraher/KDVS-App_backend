@@ -4,11 +4,12 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  PrimaryColumn,
 } from 'typeorm';
 
 @Entity({ name: 'shows' })
 export class Show {
-  @PrimaryGeneratedColumn({ type: 'bigint' })
+  @PrimaryColumn({ type: 'bigint' })
   id!: number;
 
   @Column({ type: 'varchar' })
@@ -16,9 +17,6 @@ export class Show {
 
   @Column({ type: 'varchar' })
   catagory!: string;
-
-  @Column('text', { array: true, default: () => "'{}'" })
-  spinitron_ids!: string[];
 
   @Column({ type: 'varchar', nullable: true })
   image_url?: string;
