@@ -10,6 +10,8 @@ import { ShowTimeslot } from './entities/show-timeslot.entity';
 import { Season } from './entities/season.entity';
 import { HealthModule } from './health/health.module';
 import { SeasonsModule } from './seasons/seasons.module';
+import { Persona } from './entities/persona.entity';
+import { TimeslotsModule } from './timeslots/timeslots.module';
 
 @Module({
   imports: [
@@ -21,12 +23,13 @@ import { SeasonsModule } from './seasons/seasons.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: 'postgres',
-      entities: [Show, Season, ShowTimeslot],
+      entities: [Show, Season, ShowTimeslot, Persona],
       synchronize: true,
       autoLoadEntities: true,
     }),
     ShowsModule,
     SeasonsModule,
+    TimeslotsModule,
     HealthModule,
   ],
   controllers: [AppController],

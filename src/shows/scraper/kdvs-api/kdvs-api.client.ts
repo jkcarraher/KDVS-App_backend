@@ -1,5 +1,7 @@
-import { Show } from '../../entities/show.entity';
-import { scheduleResponseSchema, zScheduleItem, zScheduleResponse } from './show-scraper.schema';
+import { Season } from "~/entities/season.entity";
+import { Show } from "../../../entities/show.entity";
+import { scheduleResponseSchema, zScheduleItem, zScheduleResponse } from "./kdvs-api.schema";
+import { getScheduleOffsetsForSeason } from "./kdvs-api.helpers";
 
 export async function fetchSchedulePage(
   offset: number,
@@ -38,7 +40,6 @@ export function mapScheduleItemsToUniqueShows(
       showsById.set(showId, {
         name: normalizedName,
         catagory: item.category?.trim() ?? '',
-        spinitron_url: item._links.self.href,
         image_url: item.image ?? '',
         spinitron_ids: [showId],
       });
@@ -46,4 +47,11 @@ export function mapScheduleItemsToUniqueShows(
   }
 
   return Array.from(showsById.values());
+}
+
+export async function fetchZShowsForSeason(season: Season): Promise<zScheduleItem[]> {
+  const offsets = getScheduleOffsetsForSeason(season);
+  const zShows = flattenScheduleResponses(await fetchSchedulePages(offsets));
+  
+  return zShows
 }

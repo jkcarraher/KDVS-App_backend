@@ -21,9 +21,6 @@ export class Show {
   spinitron_ids!: string[];
 
   @Column({ type: 'varchar', nullable: true })
-  spinitron_url?: string;
-
-  @Column({ type: 'varchar', nullable: true })
   image_url?: string;
 
   @CreateDateColumn({

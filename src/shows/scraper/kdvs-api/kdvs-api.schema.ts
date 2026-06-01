@@ -12,6 +12,7 @@ export const scheduleItemSchema = z.object({
   image: z.string().nullable(),
   _links: z.object({
     self: z.object({ href: z.string().url() }),
+    personas: z.array(z.object({ href: z.string().url() })).optional(),
   }),
 });
 

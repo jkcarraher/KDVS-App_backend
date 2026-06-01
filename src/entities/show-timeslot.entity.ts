@@ -8,7 +8,10 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { Persona } from './persona.entity';
 
 @Entity({ name: 'show_timeslots' })
 export class ShowTimeslot {
@@ -21,6 +24,21 @@ export class ShowTimeslot {
   @ManyToOne(() => Show, { nullable: false })
   @JoinColumn({ name: 'show_id' })
   show!: Show;
+
+  @ManyToMany(() => Persona, { cascade: true })
+  @JoinTable({
+    name: 'show_timeslot_personas',
+    joinColumn: {
+      name: 'show_timeslot_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'persona_id',
+      referencedColumnName: 'id',
+    },
+  })
+  personas!: Persona[];
+
 
   @Column({ type: 'bigint' })
   season_id!: number;
@@ -46,6 +64,9 @@ export class ShowTimeslot {
 
   @Column({ type: 'text', default: 'America/Los_Angeles' })
   timezone!: string;
+
+  @Column({ type: 'date', nullable: true })
+  anchor_date!: string;
 
   @CreateDateColumn()
   created_at!: Date;
