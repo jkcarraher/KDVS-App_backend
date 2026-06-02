@@ -11,11 +11,16 @@ export class TimeslotsService {
   ) {}
 
   findAll(): Promise<ShowTimeslot[]> {
-    return this.showTimeslotRepository.find();
+    return this.showTimeslotRepository.find({
+      relations: ['personas'],
+    });
   }
 
   findOne(id: number): Promise<ShowTimeslot | null> {
-    return this.showTimeslotRepository.findOneBy({ id });
+    return this.showTimeslotRepository.findOne({
+      where: { id },
+      relations: ['personas'],
+    });
   }
 
   create(timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
