@@ -9,11 +9,13 @@ import { appendZShowTimeslotByShowName } from "~/timeslots/timeslots.helper";
 import { ShowTimeslot } from "~/entities/show-timeslot.entity";
 import { fetchZShowsForSeason } from "./kdvs-api/kdvs-api.client";
 import { ShowsService } from "../shows.service";
+import { PersonasService } from "~/personas/personas.service";
 
 @Injectable()
 export class ShowScraperService {
   constructor(
     private readonly showsService: ShowsService,
+    private readonly personasService: PersonasService,
     @InjectRepository(Season)
     private readonly seasonRepository: Repository<Season>,
   ) {}
@@ -43,7 +45,7 @@ export class ShowScraperService {
     
     // Keep a map of Show objects unique by their SpinitronID.
     const uniqueShows = new Map<number, Partial<Show>>();
-    const uniquePersonaIds = new Set<string>();
+    const uniquePersonaIds = new Set<number>();
     const uniqueTimeslots = new Map<string, Map<string, Partial<ShowTimeslot>>>;
 
     for (const zShow of zShows) {
@@ -51,8 +53,9 @@ export class ShowScraperService {
       extractZShowPersonaIds(uniquePersonaIds, zShow)
       appendZShowTimeslotByShowName(uniqueTimeslots, zShow, season)
     }
-    this.logger.log(uniqueTimeslots)
 
+    this.personasService.filterSetOfPersonaIds(uniquePersonaIds)
+    
     // Insert Unique Shows into the DB
     await this.showsService.batchInsertNewShows(Array.from(uniqueShows.values()));
     

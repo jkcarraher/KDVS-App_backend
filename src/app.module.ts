@@ -12,6 +12,7 @@ import { HealthModule } from './health/health.module';
 import { SeasonsModule } from './seasons/seasons.module';
 import { Persona } from './entities/persona.entity';
 import { TimeslotsModule } from './timeslots/timeslots.module';
+import { PersonasModule } from './personas/personas.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { TimeslotsModule } from './timeslots/timeslots.module';
     ShowsModule,
     SeasonsModule,
     TimeslotsModule,
+    PersonasModule,
     HealthModule,
   ],
   controllers: [AppController],
