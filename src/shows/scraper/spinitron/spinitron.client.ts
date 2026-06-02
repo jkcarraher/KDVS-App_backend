@@ -31,7 +31,7 @@ export async function fetchPersonaFromSpinitron(
   }
 
   const html = await res.text();
-  const match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  const match = html.match(/<div[^>]*class="[^"]*\bhead\b[^"]*\bpersona\b[^"]*"[^>]*>[\s\S]*?<h1[^>]*>([\s\S]*?)<\/h1>/i);
 
   if (!match) {
     throw new Error(`Persona name not found in Spinitron HTML for id=${id}`);
@@ -46,4 +46,18 @@ export async function fetchPersonaFromSpinitron(
   persona.id = id;
   persona.name = name;
   return persona;
+}
+
+export async function fetchPersonasFromSpinitronIds(
+  personaIds: number[],
+): Promise<Persona[]> {
+  if (!personaIds?.length) {
+    return [];
+  }
+
+  const uniqueIds = Array.from(
+    new Set(personaIds.filter((id) => Number.isFinite(id) && id > 0)),
+  );
+
+  return Promise.all(uniqueIds.map((id) => fetchPersonaFromSpinitron(id)));
 }

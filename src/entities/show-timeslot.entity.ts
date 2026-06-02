@@ -25,7 +25,7 @@ export class ShowTimeslot {
   @JoinColumn({ name: 'show_id' })
   show!: Show;
 
-  @ManyToMany(() => Persona, { cascade: true })
+  @ManyToMany(() => Persona)
   @JoinTable({
     name: 'show_timeslot_personas',
     joinColumn: {

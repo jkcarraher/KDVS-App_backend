@@ -34,6 +34,12 @@ export class PersonasService {
     return this.personaRepository.delete(id).then(() => {});
   }
 
+  async createMany(personas: Partial<Persona>[]): Promise<Persona[]> {
+    if (!personas?.length) return [];
+    const newPersonas = this.personaRepository.create(personas);
+    return this.personaRepository.save(newPersonas);
+  }
+
   async filterSetOfPersonaIds(filterIds: Set<number>): Promise<Set<number>> {
     if (filterIds.size === 0) return filterIds;
 
@@ -43,7 +49,10 @@ export class PersonasService {
     });
 
     for (const persona of existing) {
-      filterIds.delete(persona.id);
+      const id = Number(persona.id);
+      if (!Number.isNaN(id)) {
+        filterIds.delete(id);
+      }
     }
 
     return filterIds;

@@ -2,6 +2,7 @@ import { zScheduleItem } from '../shows/scraper/kdvs-api/kdvs-api.schema';
 import { ShowTimeslot } from '../entities/show-timeslot.entity';
 import { DEFAULT_TIMEZONE } from '~/consts/consts';
 import { Season } from '~/entities/season.entity';
+import { Persona } from '~/entities/persona.entity';
 
 function formatLocalTime(dateString: string, timeZone = DEFAULT_TIMEZONE): string {
   const date = new Date(dateString);
@@ -69,7 +70,14 @@ export function appendZShowTimeslotByShowName(
   const startTime = formatLocalTime(item.start, timeZone);
   const endTime = formatLocalTime(item.end, timeZone);
   const slotKey = buildTimeslotKey(weekday, startTime);
-
+  const showId = item.show_id ? item.show_id : item.id;
+  const personaLinks = item._links?.personas;
+  const personaIds = personaLinks
+    ?.map((link) => String(link?.href ?? '').trim().match(/\/personas\/(\d+)(?:\/?$|\?)/))
+    .filter(Boolean)
+    .map((match) => Number(match![1]))
+    .filter((id) => Number.isFinite(id) && id > 0) ?? [];
+  
   let timeSlotMap = nestedTimeslots.get(slotKey);
   if (!timeSlotMap) {
     timeSlotMap = new Map<string, Partial<ShowTimeslot>>();
@@ -97,6 +105,7 @@ export function appendZShowTimeslotByShowName(
 
   timeSlotMap.set(showName, {
     season_id: season.id,
+    show_id: showId,
     weekday,
     start_time: startTime,
     end_time: endTime,
@@ -104,5 +113,6 @@ export function appendZShowTimeslotByShowName(
     recurrence_offset: recurrenceOffset,
     timezone: timeZone,
     anchor_date: item.start.slice(0, 10),
+    personas: personaIds.map((id) => ({ id } as Persona)),
   });
 }

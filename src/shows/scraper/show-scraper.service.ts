@@ -10,12 +10,15 @@ import { ShowTimeslot } from "~/entities/show-timeslot.entity";
 import { fetchZShowsForSeason } from "./kdvs-api/kdvs-api.client";
 import { ShowsService } from "../shows.service";
 import { PersonasService } from "~/personas/personas.service";
+import { fetchPersonasFromSpinitronIds } from "./spinitron/spinitron.client";
+import { TimeslotsService } from "~/timeslots/timeslots.service";
 
 @Injectable()
 export class ShowScraperService {
   constructor(
     private readonly showsService: ShowsService,
     private readonly personasService: PersonasService,
+    private readonly timeslotService: TimeslotsService,
     @InjectRepository(Season)
     private readonly seasonRepository: Repository<Season>,
   ) {}
@@ -54,12 +57,18 @@ export class ShowScraperService {
       appendZShowTimeslotByShowName(uniqueTimeslots, zShow, season)
     }
 
-    this.personasService.filterSetOfPersonaIds(uniquePersonaIds)
-    
-    // Insert Unique Shows into the DB
+    // Populate Personas Table
+    await this.personasService.filterSetOfPersonaIds(uniquePersonaIds)
+    const uniquePersonas = await fetchPersonasFromSpinitronIds(Array.from(uniquePersonaIds));
+    await this.personasService.createMany(uniquePersonas);
+
+    // Populate Shows Table
     await this.showsService.batchInsertNewShows(Array.from(uniqueShows.values()));
     
+    // Populate Timeslots Table
+    const normalizedTimeslots: Partial<ShowTimeslot>[] = Array.from(
+      uniqueTimeslots.values(),
+    ).flatMap((slotMap) => Array.from(slotMap.values()));
+    await this.timeslotService.replaceSeasonTimeslots(season.id, Array.from(normalizedTimeslots))
   }
-
-
 }
