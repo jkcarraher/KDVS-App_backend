@@ -12,7 +12,7 @@ export class TimeslotsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<ShowTimeslot | null> {
+  findOne(@Param('id') id: string): Promise<ShowTimeslot | null> {
     return this.timeslotsService.findOne(id);
   }
 
@@ -22,7 +22,7 @@ export class TimeslotsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
+  update(@Param('id') id: string, @Body() timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
     return this.timeslotsService.update(id, timeslot);
   }
 
