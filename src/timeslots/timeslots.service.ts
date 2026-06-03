@@ -12,14 +12,14 @@ export class TimeslotsService {
 
   findAll(): Promise<ShowTimeslot[]> {
     return this.showTimeslotRepository.find({
-      relations: ['personas'],
+      relations: ['personas', 'show', 'season'],
     });
   }
 
   findOne(id: number): Promise<ShowTimeslot | null> {
     return this.showTimeslotRepository.findOne({
       where: { id },
-      relations: ['personas'],
+      relations: ['personas', 'show', 'season'],
     });
   }
 
@@ -45,7 +45,9 @@ export class TimeslotsService {
   ): Promise<ShowTimeslot[]> {
     return await this.showTimeslotRepository.manager.transaction(
       async (manager) => {
-        await manager.delete(ShowTimeslot, { season_id: seasonId });
+        await manager.delete(ShowTimeslot, {
+          season: { id: seasonId },
+        });
 
         if (!timeslots?.length) {
           return [];

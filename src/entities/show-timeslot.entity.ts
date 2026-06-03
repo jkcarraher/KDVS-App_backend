@@ -18,9 +18,6 @@ export class ShowTimeslot {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: 'bigint' })
-  show_id!: number;
-
   @ManyToOne(() => Show, { nullable: false })
   @JoinColumn({ name: 'show_id' })
   show!: Show;
@@ -38,10 +35,6 @@ export class ShowTimeslot {
     },
   })
   personas!: Persona[];
-
-
-  @Column({ type: 'bigint' })
-  season_id!: number;
 
   @ManyToOne(() => Season, { nullable: false })
   @JoinColumn({ name: 'season_id' })

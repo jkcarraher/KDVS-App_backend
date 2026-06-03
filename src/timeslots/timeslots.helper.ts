@@ -3,6 +3,7 @@ import { ShowTimeslot } from '../entities/show-timeslot.entity';
 import { DEFAULT_TIMEZONE } from '~/consts/consts';
 import { Season } from '~/entities/season.entity';
 import { Persona } from '~/entities/persona.entity';
+import { Show } from '~/entities/show.entity';
 
 function formatLocalTime(dateString: string, timeZone = DEFAULT_TIMEZONE): string {
   const date = new Date(dateString);
@@ -104,8 +105,8 @@ export function appendZShowTimeslotByShowName(
   }
 
   timeSlotMap.set(showName, {
-    season_id: season.id,
-    show_id: showId,
+    season: {id: season.id } as Season,
+    show: { id: showId } as Show,
     weekday,
     start_time: startTime,
     end_time: endTime,
