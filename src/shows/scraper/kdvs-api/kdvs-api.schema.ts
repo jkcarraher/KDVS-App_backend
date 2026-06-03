@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+const linkSchema = z.object({ href: z.string().url() });
+
+const personaLinksSchema = z.preprocess((value) => {
+  if (value == null) return undefined;
+  return Array.isArray(value) ? value : [value];
+}, z.array(linkSchema).optional());
+
 export const scheduleItemSchema = z.object({
   id: z.number(),
   show_id: z.number().nullable().optional(),
@@ -13,7 +20,8 @@ export const scheduleItemSchema = z.object({
   image: z.string().nullable(),
   _links: z.object({
     self: z.object({ href: z.string().url() }),
-    personas: z.array(z.object({ href: z.string().url() })).optional(),
+    personas: z.array(linkSchema).optional(),
+    persona: personaLinksSchema,
   }),
 });
 

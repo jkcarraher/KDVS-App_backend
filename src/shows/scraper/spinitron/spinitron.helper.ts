@@ -1,7 +1,11 @@
 import { zScheduleItem } from "../kdvs-api/kdvs-api.schema";
 
 export function extractZShowPersonaIds(personaIds: Set<number>, item: zScheduleItem): void {
-  const personaLinks = item._links?.personas;
+  const personaLinks = [
+    ...(item._links?.personas ?? []),
+    ...(item._links?.persona ?? []),
+  ];
+
   if (!Array.isArray(personaLinks)) {
     return;
   }
