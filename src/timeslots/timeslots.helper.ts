@@ -76,12 +76,11 @@ export function appendZShowTimeslotByShowName(
     ...(item._links?.personas ?? []),
     ...(item._links?.persona ?? []),
   ];
-  
+
   const personaIds = personaLinks
     ?.map((link) => String(link?.href ?? '').trim().match(/\/personas\/(\d+)(?:\/?$|\?)/))
     .filter(Boolean)
-    .map((match) => Number(match![1]))
-    .filter((id) => Number.isFinite(id) && id > 0) ?? [];
+    .map((match) => match![1])
   
   let timeSlotMap = nestedTimeslots.get(slotKey);
   if (!timeSlotMap) {
@@ -98,9 +97,8 @@ export function appendZShowTimeslotByShowName(
 
   const weekIndex = getWeekIndexFromSeasonStart(season.start_date, item.start);
   const recurrenceOffset = weekIndex % recurrenceIntervalWeeks;
-  const anchorDate = getAnchorDate(season.start_date, item.start, recurrenceIntervalWeeks);
 
-  for (const [existingShowName, existingTimeslot] of timeSlotMap.entries()) {
+  for (const existingTimeslot of timeSlotMap.values()) {
     if (!existingTimeslot) continue;
     const existingEventStart = existingTimeslot.anchor_date!
     const existingOffset = getWeekIndexFromSeasonStart(season.start_date, existingEventStart) % recurrenceIntervalWeeks;

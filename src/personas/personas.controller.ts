@@ -12,7 +12,7 @@ export class PersonasController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Persona | null> {
+  findOne(@Param('id') id: string): Promise<Persona | null> {
     return this.personasService.findOne(id);
   }
 
@@ -22,12 +22,12 @@ export class PersonasController {
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() persona: Partial<Persona>): Promise<Persona> {
+  update(@Param('id') id: string, @Body() persona: Partial<Persona>): Promise<Persona> {
     return this.personasService.update(id, persona);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
+  remove(@Param('id') id: string): Promise<void> {
     return this.personasService.remove(id);
   }
 }

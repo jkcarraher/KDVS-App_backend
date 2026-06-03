@@ -34,7 +34,7 @@ export function getDayNumberFromDateString(dateString: string): number {
 }
 
 export function mergeZShowIntoShowMap(
-  showsById: Map<number, Partial<Show>>,
+  showsById: Map<string, Partial<Show>>,
   item: zScheduleItem,
 ): void {
   const showId = item.show_id ? item.show_id : item.id;

@@ -35,12 +35,12 @@ export class TimeslotsService {
     });
   }
 
-  remove(id: number): Promise<void> {
+  remove(id: string): Promise<void> {
     return this.showTimeslotRepository.delete(id).then(() => {});
   }
 
   async replaceSeasonTimeslots(
-    seasonId: number,
+    seasonId: string,
     timeslots: Partial<ShowTimeslot>[],
   ): Promise<ShowTimeslot[]> {
     return await this.showTimeslotRepository.manager.transaction(

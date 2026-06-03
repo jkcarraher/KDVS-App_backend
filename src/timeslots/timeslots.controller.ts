@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { ShowTimeslot } from '../entities/show-timeslot.entity';
 import { TimeslotsService } from './timeslots.service';
 
@@ -12,7 +12,7 @@ export class TimeslotsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<ShowTimeslot | null> {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ShowTimeslot | null> {
     return this.timeslotsService.findOne(id);
   }
 
@@ -22,12 +22,12 @@ export class TimeslotsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
     return this.timeslotsService.update(id, timeslot);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
+  remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.timeslotsService.remove(id);
   }
 }

@@ -47,8 +47,8 @@ export class ShowScraperService {
     const zShows = await fetchZShowsForSeason(season)
     
     // Keep a map of Show objects unique by their SpinitronID.
-    const uniqueShows = new Map<number, Partial<Show>>();
-    const uniquePersonaIds = new Set<number>();
+    const uniqueShows = new Map<string, Partial<Show>>();
+    const uniquePersonaIds = new Set<string>();
     const uniqueTimeslots = new Map<string, Map<string, Partial<ShowTimeslot>>>;
 
     for (const zShow of zShows) {

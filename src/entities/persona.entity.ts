@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 export class Persona {
 
   @PrimaryColumn({type: 'bigint'})
-  id!: number;
+  id!: string;
 
   @Column({type: 'varchar'})
   name!: string;

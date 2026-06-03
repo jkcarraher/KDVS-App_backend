@@ -15,7 +15,7 @@ export class ShowsService {
 		return this.showRepository.find();
 	}
 
-	findOne(id: number): Promise<Show | null> {
+	findOne(id: string): Promise<Show | null> {
 		return this.showRepository.findOneBy({ id });
 	}
 
@@ -24,7 +24,7 @@ export class ShowsService {
 		return this.showRepository.save(newShow);
 	}
 
-	update(id: number, show: Partial<Show>): Promise<Show> {
+	update(id: string, show: Partial<Show>): Promise<Show> {
 		return this.showRepository.save({ ...show, id });
 	}
 
@@ -35,7 +35,7 @@ export class ShowsService {
 	async batchInsertNewShows(shows: Partial<Show>[]): Promise<Show[]> {
     const showIds = shows
       .map((show) => show.id)
-      .filter((id): id is number => id != null)
+      .filter((id) => id != null)
       .map(Number);
 
     if (showIds.length === 0) {

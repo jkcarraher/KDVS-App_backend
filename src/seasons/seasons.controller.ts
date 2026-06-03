@@ -13,7 +13,7 @@ export class SeasonsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Season | null> {
+  findOne(@Param('id') id: string): Promise<Season | null> {
     return this.seasonsService.findOne(id);
   }
 
@@ -23,12 +23,12 @@ export class SeasonsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() season: Partial<Season>): Promise<Season> {
+  update(@Param('id') id: string, @Body() season: Partial<Season>): Promise<Season> {
     return this.seasonsService.update(id, season);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
+  remove(@Param('id') id: string): Promise<void> {
     return this.seasonsService.remove(id);
   }
 }

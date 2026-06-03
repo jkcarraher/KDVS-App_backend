@@ -14,7 +14,7 @@ export class PersonasService {
     return this.personaRepository.find();
   }
 
-  findOne(id: number): Promise<Persona | null> {
+  findOne(id: string): Promise<Persona | null> {
     return this.personaRepository.findOneBy({ id });
   }
 
@@ -23,14 +23,14 @@ export class PersonasService {
     return this.personaRepository.save(newPersona);
   }
 
-  update(id: number, persona: Partial<Persona>): Promise<Persona> {
+  update(id: string, persona: Partial<Persona>): Promise<Persona> {
     return this.personaRepository.save({
       ...persona,
       id,
     });
   }
 
-  remove(id: number): Promise<void> {
+  remove(id: string): Promise<void> {
     return this.personaRepository.delete(id).then(() => {});
   }
 
@@ -40,20 +40,13 @@ export class PersonasService {
     return this.personaRepository.save(newPersonas);
   }
 
-  async filterSetOfPersonaIds(filterIds: Set<number>): Promise<Set<number>> {
+  async filterSetOfPersonaIds(filterIds: Set<string>): Promise<Set<string>> {
     if (filterIds.size === 0) return filterIds;
 
     const ids = [...filterIds];
     const existing = await this.personaRepository.findBy({
       id: In(ids),
     });
-
-    for (const persona of existing) {
-      const id = Number(persona.id);
-      if (!Number.isNaN(id)) {
-        filterIds.delete(id);
-      }
-    }
 
     return filterIds;
   }

@@ -10,7 +10,7 @@ import {
 @Entity({ name: 'shows' })
 export class Show {
   @PrimaryColumn({ type: 'bigint' })
-  id!: number;
+  id!: string;
 
   @Column({ type: 'varchar' })
   name!: string;

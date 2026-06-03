@@ -13,7 +13,7 @@ export class ShowsController {
 	}
 
 	@Get(':id')
-	findOne(@Param('id', ParseIntPipe) id: number): Promise<Show | null> {
+	findOne(@Param('id', ParseIntPipe) id: string): Promise<Show | null> {
 		return this.showsService.findOne(id);
 	}
 
@@ -23,7 +23,7 @@ export class ShowsController {
 	}
 
 	@Put(':id')
-	update(@Param('id', ParseIntPipe) id: number, @Body() show: Partial<Show>): Promise<Show> {
+	update(@Param('id', ParseIntPipe) id: string, @Body() show: Partial<Show>): Promise<Show> {
 		return this.showsService.update(id, show);
 	}
 

@@ -11,12 +11,9 @@ function normalizeHtmlText(html: string): string {
 }
 
 export async function fetchPersonaFromSpinitron(
-  personaId: number,
+  personaId: string,
 ): Promise<Persona> {
   const id = personaId;
-  if (Number.isNaN(id) || id <= 0) {
-    throw new Error(`Invalid personaId: ${personaId}`);
-  }
 
   const url = `${SPINITRON_PERSONA_URL}/${id}`;
   const res = await fetch(url, {
@@ -49,15 +46,7 @@ export async function fetchPersonaFromSpinitron(
 }
 
 export async function fetchPersonasFromSpinitronIds(
-  personaIds: number[],
+  personaIds: string[],
 ): Promise<Persona[]> {
-  if (!personaIds?.length) {
-    return [];
-  }
-
-  const uniqueIds = Array.from(
-    new Set(personaIds.filter((id) => Number.isFinite(id) && id > 0)),
-  );
-
-  return Promise.all(uniqueIds.map((id) => fetchPersonaFromSpinitron(id)));
+  return Promise.all(personaIds.map((id) => fetchPersonaFromSpinitron(id)));
 }

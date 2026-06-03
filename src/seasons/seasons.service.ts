@@ -15,7 +15,7 @@ export class SeasonsService {
     return this.seasonRepository.find();
   }
 
-  findOne(id: number): Promise<Season | null> {
+  findOne(id: string): Promise<Season | null> {
     return this.seasonRepository.findOneBy({ id });
   }
 
@@ -27,7 +27,7 @@ export class SeasonsService {
     return this.seasonRepository.save(newSeason);
   }
 
-  update(id: number, season: Partial<Season>): Promise<Season> {
+  update(id: string, season: Partial<Season>): Promise<Season> {
     return this.seasonRepository.save({
       ...season,
       id,
@@ -35,7 +35,7 @@ export class SeasonsService {
     });
   }
 
-  remove(id: number): Promise<void> {
+  remove(id: string): Promise<void> {
     return this.seasonRepository.delete(id).then(() => {});
   }
 }

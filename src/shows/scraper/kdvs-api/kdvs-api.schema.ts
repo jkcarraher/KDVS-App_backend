@@ -8,8 +8,8 @@ const personaLinksSchema = z.preprocess((value) => {
 }, z.array(linkSchema).optional());
 
 export const scheduleItemSchema = z.object({
-  id: z.number(),
-  show_id: z.number().nullable().optional(),
+  id: z.string(),
+  show_id: z.string().nullable().optional(),
   start: z.string(),
   end: z.string(),
   duration: z.number(),
