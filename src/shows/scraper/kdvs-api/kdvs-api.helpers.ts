@@ -37,7 +37,7 @@ export function mergeZShowIntoShowMap(
   showsById: Map<string, Partial<Show>>,
   item: zScheduleItem,
 ): void {
-  const showId = item.show_id ? item.show_id : item.id;
+  const showId = item.show_id ? String(item.show_id) : String(item.id);
   
   const existing = showsById.get(showId);
 
@@ -45,7 +45,7 @@ export function mergeZShowIntoShowMap(
     showsById.set(showId, {
       id: showId,
       name: item.title,
-      catagory: item.category?.trim() ?? '',
+      category: item.category?.trim() ?? '',
       image_url: item.image ?? '',
     });
   }

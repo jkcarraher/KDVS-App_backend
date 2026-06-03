@@ -7,9 +7,7 @@ import { SeasonGenTask } from './seasonGenerator/seasonGen.task';
 import { SeasonsService } from './seasons.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Season]),
-  ],
+  imports: [ TypeOrmModule.forFeature([Season]) ],
   providers: [
     SeasonsService,
     SeasonGenService,

@@ -8,7 +8,7 @@ export class ShowScraperTask {
 
   constructor(private readonly showScraper: ShowScraperService) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleDailyJob() {
     this.logger.log("Show scraper cron job started")
 

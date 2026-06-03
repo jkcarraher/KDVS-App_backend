@@ -71,7 +71,7 @@ export function appendZShowTimeslotByShowName(
   const startTime = formatLocalTime(item.start, timeZone);
   const endTime = formatLocalTime(item.end, timeZone);
   const slotKey = buildTimeslotKey(weekday, startTime);
-  const showId = item.show_id ? item.show_id : item.id;
+  const showId = item.show_id ? String(item.show_id) : String(item.id);
   const personaLinks = [
     ...(item._links?.personas ?? []),
     ...(item._links?.persona ?? []),

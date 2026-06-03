@@ -16,7 +16,7 @@ export class Show {
   name!: string;
 
   @Column({ type: 'varchar' })
-  catagory!: string;
+  category!: string;
 
   @Column({ type: 'varchar', nullable: true })
   image_url?: string;

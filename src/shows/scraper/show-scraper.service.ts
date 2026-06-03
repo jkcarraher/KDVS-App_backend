@@ -49,7 +49,7 @@ export class ShowScraperService {
     // Keep a map of Show objects unique by their SpinitronID.
     const uniqueShows = new Map<string, Partial<Show>>();
     const uniquePersonaIds = new Set<string>();
-    const uniqueTimeslots = new Map<string, Map<string, Partial<ShowTimeslot>>>;
+    const uniqueTimeslots = new Map<string, Map<string, Partial<ShowTimeslot>>>();
 
     for (const zShow of zShows) {
       mergeZShowIntoShowMap(uniqueShows, zShow)
