@@ -15,8 +15,8 @@ import { Persona } from './persona.entity';
 
 @Entity({ name: 'show_timeslots' })
 export class ShowTimeslot {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @ManyToOne(() => Show, { nullable: false })
   @JoinColumn({ name: 'show_id' })

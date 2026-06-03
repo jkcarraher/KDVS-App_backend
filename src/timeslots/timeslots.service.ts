@@ -16,7 +16,7 @@ export class TimeslotsService {
     });
   }
 
-  findOne(id: number): Promise<ShowTimeslot | null> {
+  findOne(id: string): Promise<ShowTimeslot | null> {
     return this.showTimeslotRepository.findOne({
       where: { id },
       relations: ['personas', 'show', 'season'],
@@ -28,7 +28,7 @@ export class TimeslotsService {
     return this.showTimeslotRepository.save(newTimeslot);
   }
 
-  update(id: number, timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
+  update(id: string, timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
     return this.showTimeslotRepository.save({
       ...timeslot,
       id,
