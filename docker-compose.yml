@@ -47,6 +47,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+    - pgadmin-data:/var/lib/pgadmin
 
 volumes:
   pgdata:
+  pgadmin-data:
