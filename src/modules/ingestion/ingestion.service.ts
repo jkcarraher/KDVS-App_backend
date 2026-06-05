@@ -5,16 +5,16 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, LessThanOrEqual, MoreThanOrEqual, In } from "typeorm";
 import { mergeZShowIntoShowMap } from "./kdvs-api/kdvs-api.helpers";
 import { extractZShowPersonaIds } from "./spinitron/spinitron.helper";
-import { appendZShowTimeslotByShowName } from "~/timeslots/timeslots.helper";
 import { ShowTimeslot } from "~/entities/show-timeslot.entity";
 import { fetchZShowsForSeason } from "./kdvs-api/kdvs-api.client";
-import { ShowsService } from "../shows.service";
-import { PersonasService } from "~/personas/personas.service";
+import { ShowsService } from "../shows/shows.service";
 import { fetchPersonasFromSpinitronIds } from "./spinitron/spinitron.client";
-import { TimeslotsService } from "~/timeslots/timeslots.service";
+import { PersonasService } from "../personas/personas.service";
+import { TimeslotsService } from "../timeslots/timeslots.service";
+import { appendZShowTimeslotByShowName } from "../timeslots/timeslots.helper";
 
 @Injectable()
-export class ShowScraperService {
+export class IngestionService {
   constructor(
     private readonly showsService: ShowsService,
     private readonly personasService: PersonasService,
@@ -23,7 +23,7 @@ export class ShowScraperService {
     private readonly seasonRepository: Repository<Season>,
   ) {}
 
-  private readonly logger = new Logger(ShowScraperService.name);
+  private readonly logger = new Logger(IngestionService.name);
 
   async getCurrentSeason(): Promise<Season | null> {
     const today = new Date().toISOString().slice(0, 10);
