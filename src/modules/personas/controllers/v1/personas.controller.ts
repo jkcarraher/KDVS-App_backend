@@ -1,9 +1,12 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe } from '@nestjs/common';
-import { Persona } from '../entities/persona.entity';
-import { PersonasService } from './personas.service';
+import { PersonasService } from '../../personas.service';
+import { Persona } from '~/entities/persona.entity';
 
-@Controller('personas')
-export class PersonasController {
+@Controller({
+  path: 'personas',
+  version: '1',
+})
+export class PersonasV1Controller {
   constructor(private readonly personasService: PersonasService) {}
 
   @Get()
