@@ -1,18 +1,16 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ShowsModule } from './shows/shows.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { Show } from './entities/show.entity';
 import { ShowTimeslot } from './entities/show-timeslot.entity';
 import { Season } from './entities/season.entity';
 import { HealthModule } from './health/health.module';
-import { SeasonsModule } from './seasons/seasons.module';
 import { Persona } from './entities/persona.entity';
-import { TimeslotsModule } from './timeslots/timeslots.module';
-import { PersonasModule } from './personas/personas.module';
+import { ShowsModule } from './modules/shows/shows.module';
+import { SeasonsModule } from './modules/seasons/seasons.module';
+import { TimeslotsModule } from './modules/timeslots/timeslots.module';
+import { PersonasModule } from './modules/personas/personas.module';
+
 
 @Module({
   imports: [
@@ -34,7 +32,5 @@ import { PersonasModule } from './personas/personas.module';
     PersonasModule,
     HealthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

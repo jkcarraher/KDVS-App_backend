@@ -1,8 +1,11 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, ParseUUIDPipe } from '@nestjs/common';
-import { ShowTimeslot } from '../entities/show-timeslot.entity';
-import { TimeslotsService } from './timeslots.service';
+import { TimeslotsService } from '../../timeslots.service';
+import { ShowTimeslot } from '~/entities/show-timeslot.entity';
 
-@Controller('timeslots')
+@Controller({
+  path: 'timeslots',
+  version: '1',
+})
 export class TimeslotsController {
   constructor(private readonly timeslotsService: TimeslotsService) {}
 

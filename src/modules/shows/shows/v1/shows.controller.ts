@@ -1,9 +1,12 @@
 
 import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe } from '@nestjs/common';
-import { ShowsService } from './shows.service';
-import { Show } from '../entities/show.entity';
+import { ShowsService } from '../../shows.service';
+import { Show } from '~/entities/show.entity';
 
-@Controller('shows')
+@Controller({
+  path: 'shows',
+  version: '1',
+})
 export class ShowsController {
 	constructor(private readonly showsService: ShowsService) {}
 

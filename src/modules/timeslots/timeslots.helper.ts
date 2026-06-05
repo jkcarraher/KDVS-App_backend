@@ -1,5 +1,5 @@
 import { zScheduleItem } from '../ingestion/kdvs-api/kdvs-api.schema';
-import { ShowTimeslot } from '../entities/show-timeslot.entity';
+import { ShowTimeslot } from '~/entities/show-timeslot.entity';
 import { DEFAULT_TIMEZONE } from '~/consts/consts';
 import { Season } from '~/entities/season.entity';
 import { Persona } from '~/entities/persona.entity';
