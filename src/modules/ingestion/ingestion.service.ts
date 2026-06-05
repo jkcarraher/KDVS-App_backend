@@ -14,7 +14,7 @@ import { TimeslotsService } from "../timeslots/timeslots.service";
 import { appendZShowTimeslotByShowName } from "../timeslots/timeslots.helper";
 
 @Injectable()
-export class ShowScraperService {
+export class IngestionService {
   constructor(
     private readonly showsService: ShowsService,
     private readonly personasService: PersonasService,
@@ -23,7 +23,7 @@ export class ShowScraperService {
     private readonly seasonRepository: Repository<Season>,
   ) {}
 
-  private readonly logger = new Logger(ShowScraperService.name);
+  private readonly logger = new Logger(IngestionService.name);
 
   async getCurrentSeason(): Promise<Season | null> {
     const today = new Date().toISOString().slice(0, 10);
