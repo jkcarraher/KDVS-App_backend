@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe } from '@nestjs/common';
 import { PersonasService } from '../../personas.service';
-import { Persona } from '~/entities/persona.entity';
+import { Persona } from '~/shared/entities/persona.entity';
 
 @Controller({
   path: 'personas',

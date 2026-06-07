@@ -1,7 +1,7 @@
 
 import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe } from '@nestjs/common';
 import { SeasonsService } from '../../seasons.service';
-import { Season } from '~/entities/season.entity';
+import { Season } from '~/shared/entities/season.entity';
 
 @Controller({
   path: 'seasons',

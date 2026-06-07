@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, DeepPartial } from 'typeorm';
-import { Season } from '~/entities/season.entity';
+import { Season } from '~/shared/entities/season.entity';
 
 type QuarterName = 'Fall' | 'Winter' | 'Spring' | 'Summer';
 

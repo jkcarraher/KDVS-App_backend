@@ -1,9 +1,11 @@
 import { zScheduleItem } from '../ingestion/kdvs-api/kdvs-api.schema';
-import { ShowTimeslot } from '~/entities/show-timeslot.entity';
-import { DEFAULT_TIMEZONE } from '~/consts/consts';
-import { Season } from '~/entities/season.entity';
-import { Persona } from '~/entities/persona.entity';
-import { Show } from '~/entities/show.entity';
+import { ShowTimeslot } from '~/shared/entities/show-timeslot.entity';
+import { DEFAULT_TIMEZONE } from '~/shared/consts/consts';
+import { Season } from '~/shared/entities/season.entity';
+import { Persona } from '~/shared/entities/persona.entity';
+import { Show } from '~/shared/entities/show.entity';
+import { buildTimeslotKey, TimeslotKey } from './timeslots.types';
+import { DayOfWeek } from '~/shared/types/dotw.enum';
 
 function formatLocalTime(dateString: string, timeZone = DEFAULT_TIMEZONE): string {
   const date = new Date(dateString);
@@ -15,7 +17,7 @@ function formatLocalTime(dateString: string, timeZone = DEFAULT_TIMEZONE): strin
   }).format(date);
 }
 
-function getLocalWeekday(dateString: string, timeZone = DEFAULT_TIMEZONE): number {
+export function getLocalWeekday(dateString: string, timeZone = DEFAULT_TIMEZONE): number {
   const date = new Date(dateString);
   const day = new Intl.DateTimeFormat('en-US', {
     timeZone,
@@ -50,55 +52,66 @@ function getAnchorDate(seasonStart: string, eventStart: string, interval: number
   return new Date(event.getTime() - anchorWeeksBack * 7 * 86_400_000);
 }
 
-function buildTimeslotKey(weekday: number, startTime: string): string {
-  return `${weekday}-${startTime}`;
+function getKeyOfMaxValue(map: Map<number, number>): number | undefined {
+  let maxKey: number | undefined;
+  let maxValue = -Infinity;
+
+  for (const [key, value] of map) {
+    if (value > maxValue) {
+      maxValue = value;
+      maxKey = key;
+    }
+  }
+
+  return maxKey;
 }
 
-export function appendZShowTimeslotByShowName(
-  nestedTimeslots: Map<string, Map<string, Partial<ShowTimeslot>>>,
+export function appendZShowTimeslotByShowId(
+  nestedTimeslots: Map<TimeslotKey, Partial<ShowTimeslot>[]>,
+  showDOTWRecords: Map<string, Map<DayOfWeek, number>>,
   item: zScheduleItem,
   season: Season,
 ): void {
+  
   if (item.one_off) {
     return;
   }
-  
-  const showName = item.title?.trim();
-  if (!showName) return;
-
-  const timeZone = item.timezone || DEFAULT_TIMEZONE;
-  const weekday = getLocalWeekday(item.start, timeZone);
-  const startTime = formatLocalTime(item.start, timeZone);
-  const endTime = formatLocalTime(item.end, timeZone);
-  const slotKey = buildTimeslotKey(weekday, startTime);
   const showId = item.show_id ? String(item.show_id) : String(item.id);
+  const weekday = getKeyOfMaxValue(showDOTWRecords.get(showId)!)!;
+  const recordWeekday = getLocalWeekday(item.start, item.timezone)
+
+  if (weekday != recordWeekday) return;
+  
+  const startTime = formatLocalTime(item.start, item.timezone);
+  const endTime = formatLocalTime(item.end, item.timezone);
   const personaLinks = [
     ...(item._links?.personas ?? []),
     ...(item._links?.persona ?? []),
   ];
-
   const personaIds = personaLinks
     ?.map((link) => String(link?.href ?? '').trim().match(/\/personas\/(\d+)(?:\/?$|\?)/))
     .filter(Boolean)
     .map((match) => match![1])
-  
-  let timeSlotMap = nestedTimeslots.get(slotKey);
-  if (!timeSlotMap) {
-    timeSlotMap = new Map<string, Partial<ShowTimeslot>>();
-    nestedTimeslots.set(slotKey, timeSlotMap);
-  }
 
-  if (timeSlotMap.has(showName)) {
+  const slotKey = buildTimeslotKey(weekday, startTime);
+  
+  let timeSlotArr = nestedTimeslots.get(slotKey);
+  if (!timeSlotArr) {
+    timeSlotArr = [];
+    nestedTimeslots.set(slotKey, timeSlotArr);
+  }
+  
+  if (timeSlotArr.some(slot => slot.show?.id === showId)) {
     return;
   }
 
   // Updating Map Entries
-  const recurrenceIntervalWeeks = Math.max(1, timeSlotMap.size + 1);
+  const recurrenceIntervalWeeks = Math.max(1, timeSlotArr.length + 1);
 
   const weekIndex = getWeekIndexFromSeasonStart(season.start_date, item.start);
   const recurrenceOffset = weekIndex % recurrenceIntervalWeeks;
 
-  for (const existingTimeslot of timeSlotMap.values()) {
+  for (const existingTimeslot of timeSlotArr) {
     if (!existingTimeslot) continue;
     const existingEventStart = existingTimeslot.anchor_date!
     const existingOffset = getWeekIndexFromSeasonStart(season.start_date, existingEventStart) % recurrenceIntervalWeeks;
@@ -106,7 +119,7 @@ export function appendZShowTimeslotByShowName(
     existingTimeslot.recurrence_offset = existingOffset;
   }
 
-  timeSlotMap.set(showName, {
+  timeSlotArr.push({
     season: {id: season.id } as Season,
     show: { id: showId } as Show,
     weekday,
@@ -114,7 +127,7 @@ export function appendZShowTimeslotByShowName(
     end_time: endTime,
     recurrence_interval_weeks: recurrenceIntervalWeeks,
     recurrence_offset: recurrenceOffset,
-    timezone: timeZone,
+    timezone: item.timezone,
     anchor_date: item.start.slice(0, 10),
     personas: personaIds.map((id) => ({ id } as Persona)),
   });
