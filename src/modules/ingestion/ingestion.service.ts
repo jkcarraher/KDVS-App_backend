@@ -11,7 +11,8 @@ import { ShowsService } from "../shows/shows.service";
 import { fetchPersonasFromSpinitronIds } from "./spinitron/spinitron.client";
 import { PersonasService } from "../personas/personas.service";
 import { TimeslotsService } from "../timeslots/timeslots.service";
-import { appendZShowTimeslotByShowName } from "../timeslots/timeslots.helper";
+import { appendZShowTimeslotByShowName, getLocalWeekday } from "../timeslots/timeslots.helper";
+import { zScheduleItem } from "./kdvs-api/kdvs-api.schema";
 
 @Injectable()
 export class IngestionService {
@@ -35,6 +36,22 @@ export class IngestionService {
     });
   }
 
+  trackZShowDOTW(
+    showRecords: Map<string, Map<number, number>>, 
+    item: zScheduleItem
+  ) {
+    const showId = item.show_id ? String(item.show_id) : String(item.id);
+    const dotw = getLocalWeekday(item.start);
+    let showRecord = showRecords.get(showId);
+
+    if (!showRecord) {
+      showRecord = new Map<number, number>();
+      showRecords.set(showId, showRecord);
+    }
+
+    showRecord.set(dotw, (showRecord.get(dotw) ?? 0) + 1);
+  }
+
   async updateDB() {
     // Get the current Season if any
     const season = await this.getCurrentSeason();
@@ -48,13 +65,15 @@ export class IngestionService {
     
     // Keep a map of Show objects unique by their SpinitronID.
     const uniqueShows = new Map<string, Partial<Show>>();
+    const showDOTW = new Map<string, Map<number, number>>();
     const uniquePersonaIds = new Set<string>();
     const uniqueTimeslots = new Map<string, Map<string, Partial<ShowTimeslot>>>();
 
     for (const zShow of zShows) {
       mergeZShowIntoShowMap(uniqueShows, zShow)
       extractZShowPersonaIds(uniquePersonaIds, zShow)
-      appendZShowTimeslotByShowName(uniqueTimeslots, zShow, season)
+      this.trackZShowDOTW(showDOTW, zShow)
+      appendZShowTimeslotByShowName(uniqueTimeslots, showDOTW, zShow, season)
     }
 
     // Populate Personas Table
@@ -69,6 +88,7 @@ export class IngestionService {
     const normalizedTimeslots: Partial<ShowTimeslot>[] = Array.from(
       uniqueTimeslots.values(),
     ).flatMap((slotMap) => Array.from(slotMap.values()));
+
     await this.timeslotService.replaceSeasonTimeslots(season.id, Array.from(normalizedTimeslots))
   }
 }

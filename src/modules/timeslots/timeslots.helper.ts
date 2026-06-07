@@ -15,7 +15,7 @@ function formatLocalTime(dateString: string, timeZone = DEFAULT_TIMEZONE): strin
   }).format(date);
 }
 
-function getLocalWeekday(dateString: string, timeZone = DEFAULT_TIMEZONE): number {
+export function getLocalWeekday(dateString: string, timeZone = DEFAULT_TIMEZONE): number {
   const date = new Date(dateString);
   const day = new Intl.DateTimeFormat('en-US', {
     timeZone,
@@ -54,24 +54,42 @@ function buildTimeslotKey(weekday: number, startTime: string): string {
   return `${weekday}-${startTime}`;
 }
 
+function getKeyOfMaxValue(map: Map<number, number>): number | undefined {
+  let maxKey: number | undefined;
+  let maxValue = -Infinity;
+
+  for (const [key, value] of map) {
+    if (value > maxValue) {
+      maxValue = value;
+      maxKey = key;
+    }
+  }
+
+  return maxKey;
+}
+
 export function appendZShowTimeslotByShowName(
   nestedTimeslots: Map<string, Map<string, Partial<ShowTimeslot>>>,
+  showDOTWRecords: Map<string, Map<number, number>>,
   item: zScheduleItem,
   season: Season,
 ): void {
+  
   if (item.one_off) {
     return;
   }
-  
+  const showId = item.show_id ? String(item.show_id) : String(item.id);
   const showName = item.title?.trim();
+  const weekday = getKeyOfMaxValue(showDOTWRecords.get(showId)!)!;
+  const recordWeekday = getLocalWeekday(item.start, item.timezone)
+
   if (!showName) return;
 
-  const timeZone = item.timezone || DEFAULT_TIMEZONE;
-  const weekday = getLocalWeekday(item.start, timeZone);
-  const startTime = formatLocalTime(item.start, timeZone);
-  const endTime = formatLocalTime(item.end, timeZone);
+  if (weekday != recordWeekday) return;
+  
+  const startTime = formatLocalTime(item.start, item.timezone);
+  const endTime = formatLocalTime(item.end, item.timezone);
   const slotKey = buildTimeslotKey(weekday, startTime);
-  const showId = item.show_id ? String(item.show_id) : String(item.id);
   const personaLinks = [
     ...(item._links?.personas ?? []),
     ...(item._links?.persona ?? []),
@@ -114,7 +132,7 @@ export function appendZShowTimeslotByShowName(
     end_time: endTime,
     recurrence_interval_weeks: recurrenceIntervalWeeks,
     recurrence_offset: recurrenceOffset,
-    timezone: timeZone,
+    timezone: item.timezone,
     anchor_date: item.start.slice(0, 10),
     personas: personaIds.map((id) => ({ id } as Persona)),
   });
