@@ -1,7 +1,7 @@
 
 import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe } from '@nestjs/common';
 import { ShowsService } from '../../shows.service';
-import { Show } from '~/entities/show.entity';
+import { Show } from '~/shared/entities/show.entity';
 
 @Controller({
   path: 'shows',
