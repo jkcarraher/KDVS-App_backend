@@ -8,7 +8,7 @@ export class IngestionTask {
 
   constructor(private readonly ingestor: IngestionService) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_HOUR)
   async handleDailyJob() {
     this.logger.log("Show scraper cron job started")
 

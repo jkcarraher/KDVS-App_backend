@@ -101,7 +101,7 @@ export function appendZShowTimeslotByShowId(
     nestedTimeslots.set(slotKey, timeSlotArr);
   }
   
-  if (timeSlotArr.some(slot => slot.id === showId)) {
+  if (timeSlotArr.some(slot => slot.show?.id === showId)) {
     return;
   }
 
