@@ -1,5 +1,5 @@
-import { SPINITRON_PERSONA_URL } from "~/consts/consts";
-import { Persona } from "~/entities/persona.entity";
+import { SPINITRON_PERSONA_URL } from "~/shared/consts/consts";
+import { Persona } from "~/shared/entities/persona.entity";
 
 function normalizeHtmlText(html: string): string {
   return html

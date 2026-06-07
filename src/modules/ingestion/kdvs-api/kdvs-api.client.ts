@@ -1,4 +1,4 @@
-import { Season } from "~/entities/season.entity";
+import { Season } from "~/shared/entities/season.entity";
 import { scheduleResponseSchema, zScheduleItem, zScheduleResponse } from "./kdvs-api.schema";
 import { getScheduleOffsetsForSeason } from "./kdvs-api.helpers";
 

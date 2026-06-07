@@ -1,17 +1,20 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Show } from "../../entities/show.entity";
-import { Season } from "../../entities/season.entity";
+import { Show } from "../../shared/entities/show.entity";
+import { Season } from "../../shared/entities/season.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, LessThanOrEqual, MoreThanOrEqual, In } from "typeorm";
 import { mergeZShowIntoShowMap } from "./kdvs-api/kdvs-api.helpers";
 import { extractZShowPersonaIds } from "./spinitron/spinitron.helper";
-import { ShowTimeslot } from "~/entities/show-timeslot.entity";
+import { ShowTimeslot } from "~/shared/entities/show-timeslot.entity";
 import { fetchZShowsForSeason } from "./kdvs-api/kdvs-api.client";
 import { ShowsService } from "../shows/shows.service";
 import { fetchPersonasFromSpinitronIds } from "./spinitron/spinitron.client";
 import { PersonasService } from "../personas/personas.service";
 import { TimeslotsService } from "../timeslots/timeslots.service";
-import { appendZShowTimeslotByShowName } from "../timeslots/timeslots.helper";
+import { appendZShowTimeslotByShowId, getLocalWeekday } from "../timeslots/timeslots.helper";
+import { zScheduleItem } from "./kdvs-api/kdvs-api.schema";
+import { DayOfWeek } from "~/shared/types/dotw.enum";
+import { TimeslotKey } from "../timeslots/timeslots.types";
 
 @Injectable()
 export class IngestionService {
@@ -35,6 +38,22 @@ export class IngestionService {
     });
   }
 
+  recordZShowDOTW(
+    showRecords: Map<string, Map<number, number>>, 
+    item: zScheduleItem
+  ) {
+    const showId = item.show_id ? String(item.show_id) : String(item.id);
+    const dotw = getLocalWeekday(item.start);
+    let showRecord = showRecords.get(showId);
+
+    if (!showRecord) {
+      showRecord = new Map<number, number>();
+      showRecords.set(showId, showRecord);
+    }
+
+    showRecord.set(dotw, (showRecord.get(dotw) ?? 0) + 1);
+  }
+
   async updateDB() {
     // Get the current Season if any
     const season = await this.getCurrentSeason();
@@ -47,14 +66,19 @@ export class IngestionService {
     const zShows = await fetchZShowsForSeason(season)
     
     // Keep a map of Show objects unique by their SpinitronID.
-    const uniqueShows = new Map<string, Partial<Show>>();
+    const uniqueShowsById = new Map<string, Partial<Show>>();
+    const showWeekdayFrequency = new Map<string, Map<DayOfWeek, number>>();
     const uniquePersonaIds = new Set<string>();
-    const uniqueTimeslots = new Map<string, Map<string, Partial<ShowTimeslot>>>();
+    const uniqueTimeslots = new Map<TimeslotKey, Partial<ShowTimeslot>[]>();
 
     for (const zShow of zShows) {
-      mergeZShowIntoShowMap(uniqueShows, zShow)
+      mergeZShowIntoShowMap(uniqueShowsById, zShow)
       extractZShowPersonaIds(uniquePersonaIds, zShow)
-      appendZShowTimeslotByShowName(uniqueTimeslots, zShow, season)
+      this.recordZShowDOTW(showWeekdayFrequency, zShow)
+    }
+
+    for (const zShow of zShows) {
+      appendZShowTimeslotByShowId(uniqueTimeslots, showWeekdayFrequency, zShow, season)
     }
 
     // Populate Personas Table
@@ -63,12 +87,13 @@ export class IngestionService {
     await this.personasService.createMany(uniquePersonas);
 
     // Populate Shows Table
-    await this.showsService.batchInsertNewShows(Array.from(uniqueShows.values()));
+    await this.showsService.batchInsertNewShows(Array.from(uniqueShowsById.values()));
     
     // Populate Timeslots Table
     const normalizedTimeslots: Partial<ShowTimeslot>[] = Array.from(
       uniqueTimeslots.values(),
     ).flatMap((slotMap) => Array.from(slotMap.values()));
+
     await this.timeslotService.replaceSeasonTimeslots(season.id, Array.from(normalizedTimeslots))
   }
 }

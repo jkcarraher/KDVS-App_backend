@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ShowTimeslot } from '~/entities/show-timeslot.entity';
+import { ShowTimeslot } from '~/shared/entities/show-timeslot.entity';
 
 @Injectable()
 export class TimeslotsService {

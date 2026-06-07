@@ -1,6 +1,6 @@
-import { Season } from "~/entities/season.entity";
+import { Season } from "~/shared/entities/season.entity";
 import { zScheduleItem } from "./kdvs-api.schema";
-import { Show } from "~/entities/show.entity";
+import { Show } from "~/shared/entities/show.entity";
 
 export function getScheduleOffsetsForSeason(season: Season): number[] {
   const todayInPst = getPstDayNumber(new Date());

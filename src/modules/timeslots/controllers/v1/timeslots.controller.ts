@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { TimeslotsService } from '../../timeslots.service';
-import { ShowTimeslot } from '~/entities/show-timeslot.entity';
+import { ShowTimeslot } from '~/shared/entities/show-timeslot.entity';
 
 @Controller({
   path: 'timeslots',
