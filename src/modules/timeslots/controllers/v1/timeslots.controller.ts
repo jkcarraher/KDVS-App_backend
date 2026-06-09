@@ -14,23 +14,13 @@ export class TimeslotsController {
     return this.timeslotsService.findAll();
   }
 
+  @Get('current')
+  findCurrent(): Promise<ShowTimeslot | null> {
+    return this.timeslotsService.findCurrent();
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ShowTimeslot | null> {
     return this.timeslotsService.findOne(id);
-  }
-
-  @Post()
-  create(@Body() timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
-    return this.timeslotsService.create(timeslot);
-  }
-
-  @Put(':id')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
-    return this.timeslotsService.update(id, timeslot);
-  }
-
-  @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.timeslotsService.remove(id);
   }
 }
