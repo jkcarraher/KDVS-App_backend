@@ -30,14 +30,20 @@ export class TimeslotsService {
 
     const jsDay = pstNow.getDay();
     const weekday = jsDay === 0 ? 7 : jsDay;
-    const currentTime = format(pstNow, 'HH:mm:ss', {timeZone: 'America/Los_Angeles'});
+    const currentTime = format(pstNow, 'HH:mm:ss', { timeZone: 'America/Los_Angeles' });
+    const currentDay = format(pstNow, 'yyyy-MM-dd', { timeZone: 'America/Los_Angeles' });
 
     return this.showTimeslotRepository
       .createQueryBuilder('slot')
+      .leftJoinAndSelect('slot.show', 'show')
+      .leftJoinAndSelect('slot.season', 'season')
+      .leftJoinAndSelect('slot.personas', 'personas')
       .where('slot.weekday = :weekday', { weekday })
       .andWhere(':currentTime BETWEEN slot.start_time AND slot.end_time', {
         currentTime,
       })
+      .andWhere('season.start_date <= :currentDay', { currentDay })
+      .andWhere('season.end_date >= :currentDay', { currentDay })
       .getOne();
   }
 

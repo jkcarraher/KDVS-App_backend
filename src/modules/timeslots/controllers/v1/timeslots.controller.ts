@@ -14,13 +14,13 @@ export class TimeslotsController {
     return this.timeslotsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ShowTimeslot | null> {
-    return this.timeslotsService.findOne(id);
-  }
-
   @Get('current')
   findCurrent(): Promise<ShowTimeslot | null> {
     return this.timeslotsService.findCurrent();
+  }
+
+  @Get(':id')
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ShowTimeslot | null> {
+    return this.timeslotsService.findOne(id);
   }
 }
