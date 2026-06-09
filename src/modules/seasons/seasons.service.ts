@@ -1,6 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { format, toZonedTime } from 'date-fns-tz';
 import { Repository } from 'typeorm';
 import { Season } from '~/shared/entities/season.entity';
 
@@ -37,5 +38,22 @@ export class SeasonsService {
 
   remove(id: string): Promise<void> {
     return this.seasonRepository.delete(id).then(() => {});
+  }
+
+  async findCurrent(): Promise<Season | null> {
+    const pstNow = toZonedTime(
+      new Date(),
+      'America/Los_Angeles',
+    );
+
+    const today = format(pstNow, 'yyyy-MM-dd', {
+      timeZone: 'America/Los_Angeles',
+    });
+
+    return this.seasonRepository
+      .createQueryBuilder('season')
+      .where('season.start_date <= :today', { today })
+      .andWhere('season.end_date >= :today', { today })
+      .getOne();
   }
 }

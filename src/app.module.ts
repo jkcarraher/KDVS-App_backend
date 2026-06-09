@@ -4,7 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { Show } from './shared/entities/show.entity';
 import { ShowTimeslot } from './shared/entities/show-timeslot.entity';
 import { Season } from './shared/entities/season.entity';
-import { HealthModule } from './health/health.module';
+import { HealthModule } from './modules/health/health.module';
 import { Persona } from './shared/entities/persona.entity';
 import { ShowsModule } from './modules/shows/shows.module';
 import { SeasonsModule } from './modules/seasons/seasons.module';
