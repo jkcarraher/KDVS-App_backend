@@ -83,14 +83,18 @@ export class NotificationService {
     const note = new apn.Notification();
 
     note.topic = process.env.APN_BUNDLE_ID!;
+    note.sound = 'default';
+    note.priority = 10;
 
     note.alert = {
       title: 'KDVS',
       body: `${showName} starts soon`,
     };
 
-    await this.apnsProvider
+    const result = await this.apnsProvider
       .getClient()
       .send(note, deviceToken);
+
+    console.log("APNs result:", JSON.stringify(result, null, 2));
   }
 }

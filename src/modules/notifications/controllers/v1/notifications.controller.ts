@@ -25,10 +25,13 @@ export class NotificationController {
     @Body('deviceToken') deviceToken: string,
     @Body('showId') showId: string,
   ) {
-    return this.notificationService.subscribe(
-      deviceToken,
-      showId,
-    );
+    const subscription =
+      await this.notificationService.subscribe(deviceToken, showId);
+
+    return {
+      success: true,
+      subscriptionId: subscription.id,
+    };
   }
 
   @Delete('subscribe/:showId')
