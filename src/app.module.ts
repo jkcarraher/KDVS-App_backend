@@ -10,10 +10,15 @@ import { ShowsModule } from './modules/shows/shows.module';
 import { SeasonsModule } from './modules/seasons/seasons.module';
 import { TimeslotsModule } from './modules/timeslots/timeslots.module';
 import { PersonasModule } from './modules/personas/personas.module';
+import { NotificationModule } from './modules/notifications/notifications.module';
+import { ConfigModule } from '@nestjs/config';
 
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -31,6 +36,7 @@ import { PersonasModule } from './modules/personas/personas.module';
     TimeslotsModule,
     PersonasModule,
     HealthModule,
+    NotificationModule
   ],
 })
 export class AppModule {}

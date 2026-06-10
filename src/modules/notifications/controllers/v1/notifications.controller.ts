@@ -10,7 +10,10 @@ import {
 import { NotificationService } from '../../notifications.service';
 
 
-@Controller('notifications')
+@Controller({
+  path: 'notifications',
+  version: '1',
+})
 export class NotificationController {
   constructor(
     private readonly notificationService:

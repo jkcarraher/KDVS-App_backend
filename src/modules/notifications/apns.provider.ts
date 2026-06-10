@@ -8,7 +8,7 @@ export class ApnsProvider {
   constructor() {
     this.provider = new apn.Provider({
       token: {
-        key: process.env.APN_KEY!,
+        key: process.env.APN_KEY_PATH!,
         keyId: process.env.APN_KEY_ID!,
         teamId: process.env.APN_TEAM_ID!,
       },
