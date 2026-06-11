@@ -1,19 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import dayjs from 'dayjs';
 
 @Injectable()
 export class NotificationQueueService {
+  private readonly logger = new Logger(NotificationQueueService.name);
+  
   constructor(
     @InjectQueue('notifications')
     private readonly queue: Queue,
   ) {}
 
-  async enqueueShowReminder(showId: string, startTime: Date) {
-    const sendAt = new Date(startTime);
-    sendAt.setMinutes(sendAt.getMinutes() - 15);
-
+  async enqueueShowReminder(showId: string, sendAt: Date) {
     const now = Date.now();
     const delay = sendAt.getTime() - now;
 

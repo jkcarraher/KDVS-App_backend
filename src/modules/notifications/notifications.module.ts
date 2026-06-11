@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationSubscription } from '~/shared/entities/show-notification-subscription.entity';
 import { Show } from '~/shared/entities/show.entity';
 import { NotificationController } from './controllers/v1/notifications.controller';
-import { NotificationsTask } from './notifications.task';
 import { NotificationProcessor } from './notification.processor';
 import { NotificationQueueService } from './notification-queue.service';
 import { BullModule } from '@nestjs/bullmq';
@@ -21,7 +20,6 @@ import { BullModule } from '@nestjs/bullmq';
   providers: [
     NotificationQueueService,
     NotificationProcessor,
-    NotificationsTask,
     NotificationService,
     ApnsProvider,
   ],

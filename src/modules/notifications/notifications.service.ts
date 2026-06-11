@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { ConflictException, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { ApnsProvider } from "./apns.provider";
 import * as apn from 'apn';
 import { InjectRepository } from "@nestjs/typeorm";
@@ -8,7 +8,8 @@ import { Show } from "~/shared/entities/show.entity";
 
 @Injectable()
 export class NotificationService {
-  constructor(
+  private readonly logger = new Logger(NotificationService.name);
+  constructor(    
     @InjectRepository(NotificationSubscription)
     private readonly subscriptionRepo: Repository<NotificationSubscription>,
 
@@ -86,6 +87,7 @@ export class NotificationService {
   }
 
   async sendShowReminders(showId: string) {
+    this.logger.log("Sending Notis for "+showId)
     const show = await this.showRepo.findOne({
       where: { id: showId },
     });

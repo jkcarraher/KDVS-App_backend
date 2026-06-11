@@ -4,6 +4,8 @@ import { IngestionService } from "./ingestion.service";
 import { NotificationQueueService } from "../notifications/notification-queue.service";
 import { TimeslotsService } from "../timeslots/timeslots.service";
 import { combineDateAndTime, getDateForWeekday } from "../timeslots/timeslots.helper";
+import { formatInTimeZone, toZonedTime } from "date-fns-tz";
+import { DEFAULT_TIMEZONE } from "~/shared/consts/consts";
 
 @Injectable()
 export class IngestionTask {
@@ -15,7 +17,7 @@ export class IngestionTask {
     private readonly notificationQueue: NotificationQueueService,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_HOUR)
   async handleDailyJob() {
     this.logger.log("Show scraper cron job started")
 
@@ -26,12 +28,11 @@ export class IngestionTask {
 
   private async scheduleNotifications() {
     const slots =
-      await this.timeslotService.getUpcomingTimeslots(6);
+      await this.timeslotService.getUpcomingTimeslots();
 
-    const now = new Date();
+    const now = toZonedTime(new Date(), DEFAULT_TIMEZONE);
 
     for (const slot of slots) {
-      this.logger.log("Logging " + slot.show.name);
 
       const baseDate = getDateForWeekday(slot.weekday);
 
@@ -40,12 +41,22 @@ export class IngestionTask {
         slot.start_time,
       );
 
+      this.logger.log(startDateTime.toISOString())
+
       const sendAt = new Date(startDateTime);
-      sendAt.setMinutes(sendAt.getMinutes() - 15);
+      sendAt.setMinutes(sendAt.getMinutes() - 5);
 
       if (sendAt.getTime() <= now.getTime()) {
         continue;
       }
+
+      this.logger.log(
+        `Logging ${slot.show.name} @ ${formatInTimeZone(
+          sendAt,
+          'America/Los_Angeles',
+          'HH:mm:ss'
+        )}`
+      );
 
       await this.notificationQueue.enqueueShowReminder(
         slot.show.id,

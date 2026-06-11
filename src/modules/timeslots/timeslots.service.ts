@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShowTimeslot } from '~/shared/entities/show-timeslot.entity';
 import { toZonedTime, format } from 'date-fns-tz';
+import { DEFAULT_TIMEZONE } from '~/shared/consts/consts';
 
 @Injectable()
 export class TimeslotsService {
@@ -47,14 +48,11 @@ export class TimeslotsService {
       .getOne();
   }
 
-  async getUpcomingTimeslots(hoursAhead = 3) {
+  async getUpcomingTimeslots() {
     const now = new Date();
-    const pstNow = toZonedTime(now, 'America/Los_Angeles');
+    const pstNow = toZonedTime(now, DEFAULT_TIMEZONE);
 
-    const currentTime = format(pstNow, 'HH:mm:ss', {
-      timeZone: 'America/Los_Angeles',
-    });
-
+    const currentTime = format(pstNow, 'HH:mm:ss');
     const weekday = pstNow.getDay() === 0 ? 7 : pstNow.getDay();
 
     return this.showTimeslotRepository
@@ -63,14 +61,15 @@ export class TimeslotsService {
       .leftJoinAndSelect('slot.season', 'season')
       .leftJoinAndSelect('slot.personas', 'personas')
       .where('slot.weekday = :weekday', { weekday })
+
       .andWhere('season.start_date <= :today', {
         today: format(pstNow, 'yyyy-MM-dd', {
-          timeZone: 'America/Los_Angeles',
+          timeZone: DEFAULT_TIMEZONE,
         }),
       })
       .andWhere('season.end_date >= :today', {
         today: format(pstNow, 'yyyy-MM-dd', {
-          timeZone: 'America/Los_Angeles',
+          timeZone: DEFAULT_TIMEZONE,
         }),
       })
       .andWhere('slot.start_time >= :currentTime', {

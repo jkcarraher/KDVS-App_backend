@@ -6,6 +6,7 @@ import { Persona } from '~/shared/entities/persona.entity';
 import { Show } from '~/shared/entities/show.entity';
 import { buildTimeslotKey, TimeslotKey } from './timeslots.types';
 import { DayOfWeek } from '~/shared/types/dotw.enum';
+import { fromZonedTime } from 'date-fns-tz';
 
 function formatLocalTime(dateString: string, timeZone = DEFAULT_TIMEZONE): string {
   const date = new Date(dateString);
@@ -133,21 +134,35 @@ export function appendZShowTimeslotByShowId(
   });
 }
 
+
 export function combineDateAndTime(date: Date, time: string): Date {
-  const [hours, minutes, seconds] = time.split(':').map(Number);
+  const fullTime = time.split(':').length === 2 ? `${time}:00` : time;
 
-  const result = new Date(date);
-  result.setHours(hours, minutes, seconds || 0, 0);
+  const dateString = new Intl.DateTimeFormat('en-CA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: DEFAULT_TIMEZONE,
+  }).format(date);
 
-  return result;
+  const localDateTime = `${dateString}T${fullTime}`;
+
+  return fromZonedTime(localDateTime, DEFAULT_TIMEZONE);
 }
 
 export function getDateForWeekday(targetWeekday: number): Date {
   const now = new Date();
+
+  const currentWeekday =
+    now.getDay() === 0 ? 7 : now.getDay();
+
+  let diff = targetWeekday - currentWeekday;
+
+  if (diff < 0) {
+    diff += 7;
+  }
+
   const result = new Date(now);
-
-  const diff = targetWeekday - now.getDay();
-
   result.setDate(now.getDate() + diff);
 
   return result;
