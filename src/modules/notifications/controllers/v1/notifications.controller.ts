@@ -8,6 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { NotificationService } from '../../notifications.service';
+import { Show } from '~/shared/entities/show.entity';
 
 
 @Controller({
@@ -65,5 +66,14 @@ export class NotificationController {
     return {
       subscribed,
     };
+  }
+
+  @Get('subscriptions')
+  async getSubscribedShows(
+    @Query('deviceToken') deviceToken: string,
+  ): Promise<Show[]> {
+    return this.notificationService.getSubscribedShows(
+      deviceToken,
+    );
   }
 }

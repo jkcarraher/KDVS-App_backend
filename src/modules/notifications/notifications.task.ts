@@ -22,7 +22,7 @@ export class NotificationsTask {
 
   @Cron('*/5 * * * *')
   async testNotification() {
-    this.logger.log("Running notification test job...");
+    this.logger.log('Running notification test job...');
 
     const subscriptions = await this.subscriptionRepo.find({
       relations: {
@@ -30,21 +30,30 @@ export class NotificationsTask {
       },
     });
 
-    for (const sub of subscriptions) {
-      this.logger.log("Sub", sub.deviceToken)
+    let successCount = 0;
+    let failureCount = 0;
 
+    for (const sub of subscriptions) {
       try {
         await this.notifier.sendShowReminder(
           sub.deviceToken,
-          sub.show.name
+          sub.show.name,
         );
+
+        successCount++;
       } catch (err) {
+        failureCount++;
+
         this.logger.error(
           `Failed sending to ${sub.deviceToken}`,
-          err
+          err,
         );
       }
     }
+
+    this.logger.log(
+      `Notification job complete. Sent: ${successCount}, Failed: ${failureCount}, Total: ${subscriptions.length}`,
+    );
   }
 
 }

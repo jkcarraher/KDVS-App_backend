@@ -61,10 +61,7 @@ export class NotificationService {
     });
   }
 
-  async isSubscribed(
-    deviceToken: string,
-    showId: string,
-  ): Promise<boolean> {
+  async isSubscribed( deviceToken: string, showId: string ): Promise<boolean> {
     const subscription =
       await this.subscriptionRepo.findOne({
         where: {
@@ -74,6 +71,18 @@ export class NotificationService {
       });
 
     return !!subscription;
+  }
+
+  async getSubscribedShows( deviceToken: string ): Promise<Show[]> {
+    const subscriptions =
+      await this.subscriptionRepo.find({
+        where: { deviceToken },
+        relations: ['show'],
+      });
+
+    return subscriptions.map(
+      (subscription) => subscription.show,
+    );
   }
 
   async sendShowReminder(
@@ -91,10 +100,8 @@ export class NotificationService {
       body: `${showName} starts soon`,
     };
 
-    const result = await this.apnsProvider
+    await this.apnsProvider
       .getClient()
       .send(note, deviceToken);
-
-    console.log("APNs result:", JSON.stringify(result, null, 2));
   }
 }
