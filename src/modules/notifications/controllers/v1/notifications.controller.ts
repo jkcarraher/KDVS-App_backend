@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from '../../notifications.service';
 import { Show } from '~/shared/entities/show.entity';
+import { NotificationQueueService } from '../../notification-queue.service';
 
 
 @Controller({
@@ -19,6 +20,8 @@ export class NotificationController {
   constructor(
     private readonly notificationService:
       NotificationService,
+    private readonly queueService:
+      NotificationQueueService,
   ) {}
 
   @Post('subscribe')

@@ -132,3 +132,23 @@ export function appendZShowTimeslotByShowId(
     personas: personaIds.map((id) => ({ id } as Persona)),
   });
 }
+
+export function combineDateAndTime(date: Date, time: string): Date {
+  const [hours, minutes, seconds] = time.split(':').map(Number);
+
+  const result = new Date(date);
+  result.setHours(hours, minutes, seconds || 0, 0);
+
+  return result;
+}
+
+export function getDateForWeekday(targetWeekday: number): Date {
+  const now = new Date();
+  const result = new Date(now);
+
+  const diff = targetWeekday - now.getDay();
+
+  result.setDate(now.getDate() + diff);
+
+  return result;
+}

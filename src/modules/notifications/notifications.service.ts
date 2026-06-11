@@ -85,23 +85,36 @@ export class NotificationService {
     );
   }
 
-  async sendShowReminder(
-    deviceToken: string,
-    showName: string,
-  ) {
+  async sendShowReminders(showId: string) {
+    const show = await this.showRepo.findOne({
+      where: { id: showId },
+    });
+
+    if (!show) {
+      return;
+    }
+
+    const subscriptions = await this.subscriptionRepo.findBy({
+      showId,
+    });
+
+    const deviceTokens = subscriptions.map(
+      (sub) => sub.deviceToken,
+    );
+
     const note = new apn.Notification();
 
     note.topic = process.env.APN_BUNDLE_ID!;
     note.sound = 'default';
-    note.priority = 10;
 
     note.alert = {
       title: 'KDVS',
-      body: `${showName} starts soon`,
+      body: `${show.name} starts soon`,
     };
 
-    await this.apnsProvider
-      .getClient()
-      .send(note, deviceToken);
+    await this.apnsProvider.getClient().send(
+      note,
+      deviceTokens,
+    );
   }
 }

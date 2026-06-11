@@ -22,6 +22,7 @@ export class NotificationsTask {
 
   @Cron('*/5 * * * *')
   async testNotification() {
+    
     this.logger.log('Running notification test job...');
 
     const subscriptions = await this.subscriptionRepo.find({
@@ -35,10 +36,7 @@ export class NotificationsTask {
 
     for (const sub of subscriptions) {
       try {
-        await this.notifier.sendShowReminder(
-          sub.deviceToken,
-          sub.show.name,
-        );
+        // await this.notifier.sendShowReminder( sub.deviceToken, sub.show.name );
 
         successCount++;
       } catch (err) {

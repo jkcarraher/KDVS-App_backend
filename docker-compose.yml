@@ -14,6 +14,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    container_name: redis
+    ports:
+      - "6379:6379"
 
   backend:
     restart: unless-stopped
@@ -32,6 +39,7 @@ services:
       - '3000:3000'
     depends_on:
       - db
+      - redis
     volumes:
       - ./src:/app/src
 

@@ -47,6 +47,38 @@ export class TimeslotsService {
       .getOne();
   }
 
+  async getUpcomingTimeslots(hoursAhead = 3) {
+    const now = new Date();
+    const pstNow = toZonedTime(now, 'America/Los_Angeles');
+
+    const currentTime = format(pstNow, 'HH:mm:ss', {
+      timeZone: 'America/Los_Angeles',
+    });
+
+    const weekday = pstNow.getDay() === 0 ? 7 : pstNow.getDay();
+
+    return this.showTimeslotRepository
+      .createQueryBuilder('slot')
+      .leftJoinAndSelect('slot.show', 'show')
+      .leftJoinAndSelect('slot.season', 'season')
+      .leftJoinAndSelect('slot.personas', 'personas')
+      .where('slot.weekday = :weekday', { weekday })
+      .andWhere('season.start_date <= :today', {
+        today: format(pstNow, 'yyyy-MM-dd', {
+          timeZone: 'America/Los_Angeles',
+        }),
+      })
+      .andWhere('season.end_date >= :today', {
+        today: format(pstNow, 'yyyy-MM-dd', {
+          timeZone: 'America/Los_Angeles',
+        }),
+      })
+      .andWhere('slot.start_time >= :currentTime', {
+        currentTime,
+      })
+      .getMany();
+  }
+
   create(timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
     const newTimeslot = this.showTimeslotRepository.create(timeslot);
     return this.showTimeslotRepository.save(newTimeslot);
