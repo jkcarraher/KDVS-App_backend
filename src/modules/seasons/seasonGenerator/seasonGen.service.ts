@@ -174,4 +174,24 @@ export class SeasonGenService {
   private formatDate(date: Date): string {
     return date.toISOString().slice(0, 10);
   }
+
+  public async populateSeasonsForNextTenYears(): Promise<void> {
+    const startYear = this.getCurrentAcademicYear();
+    const endYear = startYear + 9;
+
+    this.logger.log(`Ensuring seasons for academic years ${startYear} through ${endYear}`);
+
+    for (let year = startYear; year <= endYear; year += 1) {
+      await this.generateSeasonsForYear(year);
+    }
+
+    this.logger.log('Season generation complete');
+  }
+  private getCurrentAcademicYear(): number {
+    const today = new Date();
+    const currentYear = today.getUTCFullYear();
+    const fallStart = this.getFallStartDate(currentYear);
+
+    return today < fallStart ? currentYear - 1 : currentYear;
+  }
 }

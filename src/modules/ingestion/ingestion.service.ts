@@ -1,8 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Show } from "../../shared/entities/show.entity";
 import { Season } from "../../shared/entities/season.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, LessThanOrEqual, MoreThanOrEqual, In } from "typeorm";
 import { mergeZShowIntoShowMap } from "./kdvs-api/kdvs-api.helpers";
 import { extractZShowPersonaIds } from "./spinitron/spinitron.helper";
 import { ShowTimeslot } from "~/shared/entities/show-timeslot.entity";
@@ -15,28 +13,18 @@ import { appendZShowTimeslotByShowId, getLocalWeekday } from "../timeslots/times
 import { zScheduleItem } from "./kdvs-api/kdvs-api.schema";
 import { DayOfWeek } from "~/shared/types/dotw.enum";
 import { TimeslotKey } from "../timeslots/timeslots.types";
+import { SeasonsService } from "../seasons/seasons.service";
 
 @Injectable()
 export class IngestionService {
   constructor(
     private readonly showsService: ShowsService,
+    private readonly seasonsService: SeasonsService,
     private readonly personasService: PersonasService,
     private readonly timeslotService: TimeslotsService,
-    @InjectRepository(Season)
-    private readonly seasonRepository: Repository<Season>,
   ) {}
 
   private readonly logger = new Logger(IngestionService.name);
-
-  async getCurrentSeason(): Promise<Season | null> {
-    const today = new Date().toISOString().slice(0, 10);
-    return this.seasonRepository.findOne({
-      where: {
-        start_date: LessThanOrEqual(today),
-        end_date: MoreThanOrEqual(today),
-      },
-    });
-  }
 
   recordZShowDOTW(
     showRecords: Map<string, Map<number, number>>, 
@@ -56,7 +44,7 @@ export class IngestionService {
 
   async updateDB() {
     // Get the current Season if any
-    const season = await this.getCurrentSeason();
+    const season = await this.seasonsService.getCurrentSeason();
     if (!season) {
       this.logger.warn('No current season found for show scraper.');
       return;

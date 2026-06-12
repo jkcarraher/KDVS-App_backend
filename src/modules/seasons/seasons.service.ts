@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { format, toZonedTime } from 'date-fns-tz';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Season } from '~/shared/entities/season.entity';
 
 @Injectable()
@@ -55,5 +55,15 @@ export class SeasonsService {
       .where('season.start_date <= :today', { today })
       .andWhere('season.end_date >= :today', { today })
       .getOne();
+  }
+
+  async getCurrentSeason(): Promise<Season | null> {
+    const today = new Date().toISOString().slice(0, 10);
+    return this.seasonRepository.findOne({
+      where: {
+        start_date: LessThanOrEqual(today),
+        end_date: MoreThanOrEqual(today),
+      },
+    });
   }
 }

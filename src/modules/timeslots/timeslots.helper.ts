@@ -45,14 +45,6 @@ function getWeekIndexFromSeasonStart(seasonStart: string, eventStart: string): n
   return Math.max(0, Math.floor(days / 7));
 }
 
-function getAnchorDate(seasonStart: string, eventStart: string, interval: number): Date {
-  const event = new Date(eventStart);
-  const weekIndex = getWeekIndexFromSeasonStart(seasonStart, eventStart);
-  const offset = weekIndex % interval;
-  const anchorWeeksBack = weekIndex - offset;
-  return new Date(event.getTime() - anchorWeeksBack * 7 * 86_400_000);
-}
-
 function getKeyOfMaxValue(map: Map<number, number>): number | undefined {
   let maxKey: number | undefined;
   let maxValue = -Infinity;
@@ -73,15 +65,11 @@ export function appendZShowTimeslotByShowId(
   item: zScheduleItem,
   season: Season,
 ): void {
-  
-  if (item.one_off) {
-    return;
-  }
   const showId = item.show_id ? String(item.show_id) : String(item.id);
-  const weekday = getKeyOfMaxValue(showDOTWRecords.get(showId)!)!;
-  const recordWeekday = getLocalWeekday(item.start, item.timezone)
+  const weekday = getLocalWeekday(item.start, item.timezone);
+  const weekdayCount = showDOTWRecords.get(showId)?.get(weekday) ?? 0;
 
-  if (weekday != recordWeekday) return;
+  if (weekdayCount <= 1) return;
   
   const startTime = formatLocalTime(item.start, item.timezone);
   const endTime = formatLocalTime(item.end, item.timezone);

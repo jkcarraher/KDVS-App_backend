@@ -18,7 +18,7 @@ export class IngestionTask {
   ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
-  async handleDailyJob() {
+  async runScheduleSync() {
     this.logger.log("Show scraper cron job started")
 
     await this.ingestor.updateDB();

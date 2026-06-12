@@ -13,6 +13,9 @@ import { PersonasModule } from './modules/personas/personas.module';
 import { NotificationModule } from './modules/notifications/notifications.module';
 import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
+import { BootstrapService } from './bootstrap.service';
+import { IngestionTask } from './modules/ingestion/ingestion.task';
+import { IngestionModule } from './modules/ingestion/ingestion.module';
 
 
 @Module({
@@ -38,6 +41,7 @@ import { BullModule } from '@nestjs/bullmq';
         port: Number(process.env.REDIS_PORT!),
       },
     }),
+    IngestionModule,
     ShowsModule,
     SeasonsModule,
     TimeslotsModule,
@@ -45,5 +49,8 @@ import { BullModule } from '@nestjs/bullmq';
     HealthModule,
     NotificationModule
   ],
+  providers: [
+    BootstrapService
+  ]
 })
 export class AppModule {}
