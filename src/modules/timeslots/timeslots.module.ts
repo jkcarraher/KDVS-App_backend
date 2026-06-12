@@ -8,7 +8,9 @@ import { ShowTimeslot } from '~/shared/entities/show-timeslot.entity';
   imports: [
     TypeOrmModule.forFeature([ShowTimeslot])
   ],
-  providers: [TimeslotsService],
+  providers: [
+    TimeslotsService
+  ],
   controllers: [TimeslotsController],
   exports: [ TimeslotsService ],
 })

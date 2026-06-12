@@ -8,9 +8,12 @@ import { NotificationController } from './controllers/v1/notifications.controlle
 import { NotificationProcessor } from './notification.processor';
 import { NotificationQueueService } from './notification-queue.service';
 import { BullModule } from '@nestjs/bullmq';
+import { NotificationsTask } from './notifications.task';
+import { TimeslotsModule } from '../timeslots/timeslots.module';
 
 @Module({
   imports: [
+    TimeslotsModule,
     BullModule.registerQueue({
       name: 'notifications',
     }),
@@ -20,12 +23,13 @@ import { BullModule } from '@nestjs/bullmq';
   providers: [
     NotificationQueueService,
     NotificationProcessor,
+    NotificationsTask,
     NotificationService,
     ApnsProvider,
   ],
   exports: [
     NotificationService,
-    NotificationQueueService,
+    NotificationsTask,
   ],
 })
 export class NotificationModule {}

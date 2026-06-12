@@ -1,6 +1,4 @@
 import { Season } from "~/shared/entities/season.entity";
-import { zScheduleItem } from "./kdvs-api.schema";
-import { Show } from "~/shared/entities/show.entity";
 
 export function getScheduleOffsetsForSeason(season: Season): number[] {
   const todayInPst = getPstDayNumber(new Date());
@@ -31,22 +29,4 @@ export function getPstDayNumber(date: Date): number {
 export function getDayNumberFromDateString(dateString: string): number {
   const [year, month, day] = dateString.split('-').map(Number);
   return Math.floor(Date.UTC(year, month - 1, day) / 86_400_000);
-}
-
-export function mergeZShowIntoShowMap(
-  showsById: Map<string, Partial<Show>>,
-  item: zScheduleItem,
-): void {
-  const showId = item.show_id ? String(item.show_id) : String(item.id);
-  
-  const existing = showsById.get(showId);
-
-  if (!existing) {
-    showsById.set(showId, {
-      id: showId,
-      name: item.title,
-      category: item.category?.trim() ?? '',
-      image_url: item.image ?? '',
-    });
-  }
 }

@@ -14,7 +14,6 @@ import { NotificationModule } from './modules/notifications/notifications.module
 import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
 import { BootstrapService } from './bootstrap.service';
-import { IngestionTask } from './modules/ingestion/ingestion.task';
 import { IngestionModule } from './modules/ingestion/ingestion.module';
 
 
