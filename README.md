@@ -1,14 +1,33 @@
 # KDVS App Backend
-Serving live schedule, APN show notifications, & listener tracking for the KDVS App.
 
-<img width="1190" height="724" alt="Screenshot 2026-06-12 at 3 05 43 PM" src="https://github.com/user-attachments/assets/12b639d4-af47-4207-83db-386b5572580f" />
+Backend service for the KDVS App, providing live programming schedule data, APN (Apple Push Notification) show notifications, listener tracking and analytics.
 
-## Steps to run locally
+###
+![KDVS App Backend Dashboard](https://github.com/user-attachments/assets/12b639d4-af47-4207-83db-386b5572580f)
+
+## Running Locally
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### 1. Start the application
 
 ```bash
-# Start
-$ docker compose up --build
+docker compose up --build
+```
 
-# Stop
-$ docker compose down
+### 2. Stop the application
+
+```bash
+docker compose down
+```
+
+### 3. Verify the service
+
+Open:
+
+```text
+http://localhost:3000/health
 ```
