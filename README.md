@@ -31,3 +31,9 @@ Open:
 ```text
 http://localhost:3000/health
 ```
+
+### 4. Restart the service
+
+```bash
+docker compose restart
+```
