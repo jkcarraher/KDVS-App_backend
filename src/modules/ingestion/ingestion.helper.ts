@@ -6,7 +6,6 @@ import { ShowTimeslot } from "~/shared/entities/show-timeslot.entity";
 import { DayOfWeek } from "~/shared/types/dotw.enum";
 import { Season } from "~/shared/entities/season.entity";
 import { Persona } from "~/shared/entities/persona.entity";
-import { Logger } from "@nestjs/common";
 
 export function zShowToTimeslot(
   season: Season,
@@ -77,6 +76,8 @@ export function appendZShowTimeslotByShowId(
   item: zScheduleItem,
   season: Season,
 ): void {
+  const IGNORE_TIMESLOT_THRESHOLD = 2;
+
   const timeslot = zShowToTimeslot(season, item)
 
   const slotKey = buildTimeslotKey( timeslot.weekday! , timeslot.start_time!);
@@ -94,7 +95,7 @@ export function appendZShowTimeslotByShowId(
 
   // zShow on this DOTW occurs less than 2 times
   const weekdayMap = showDOTWRecords.get(timeslot.show?.id!);
-  if ((weekdayMap!.get(timeslot.weekday!) ?? 0) <= 2) {
+  if ((weekdayMap!.get(timeslot.weekday!) ?? 0) <= IGNORE_TIMESLOT_THRESHOLD) {
     return;
   }
 
