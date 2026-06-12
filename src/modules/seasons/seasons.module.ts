@@ -13,6 +13,12 @@ import { Season } from '~/shared/entities/season.entity';
     SeasonGenService,
     SeasonGenTask
   ],
-  controllers: [SeasonsController],
+  controllers: [
+    SeasonsController
+  ],
+  exports: [ 
+    SeasonsService,
+    SeasonGenTask,
+  ]
 })
 export class SeasonsModule {}

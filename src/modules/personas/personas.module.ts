@@ -10,6 +10,6 @@ import { Persona } from '~/shared/entities/persona.entity';
   controllers: [
     PersonasV1Controller
   ],
-  exports: [PersonasService],
+  exports: [ PersonasService ],
 })
 export class PersonasModule {}

@@ -5,9 +5,13 @@ import { TimeslotsService } from './timeslots.service';
 import { ShowTimeslot } from '~/shared/entities/show-timeslot.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ShowTimeslot])],
-  providers: [TimeslotsService],
+  imports: [
+    TypeOrmModule.forFeature([ShowTimeslot])
+  ],
+  providers: [
+    TimeslotsService
+  ],
   controllers: [TimeslotsController],
-  exports: [TimeslotsService],
+  exports: [ TimeslotsService ],
 })
 export class TimeslotsModule {}

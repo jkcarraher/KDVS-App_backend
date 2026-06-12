@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShowTimeslot } from '~/shared/entities/show-timeslot.entity';
 import { toZonedTime, format } from 'date-fns-tz';
+import { DEFAULT_TIMEZONE } from '~/shared/consts/consts';
 
 @Injectable()
 export class TimeslotsService {
@@ -45,6 +46,36 @@ export class TimeslotsService {
       .andWhere('season.start_date <= :currentDay', { currentDay })
       .andWhere('season.end_date >= :currentDay', { currentDay })
       .getOne();
+  }
+
+  async getUpcomingTimeslots() {
+    const now = new Date();
+    const pstNow = toZonedTime(now, DEFAULT_TIMEZONE);
+
+    const currentTime = format(pstNow, 'HH:mm:ss');
+    const weekday = pstNow.getDay() === 0 ? 7 : pstNow.getDay();
+
+    return this.showTimeslotRepository
+      .createQueryBuilder('slot')
+      .leftJoinAndSelect('slot.show', 'show')
+      .leftJoinAndSelect('slot.season', 'season')
+      .leftJoinAndSelect('slot.personas', 'personas')
+      .where('slot.weekday = :weekday', { weekday })
+
+      .andWhere('season.start_date <= :today', {
+        today: format(pstNow, 'yyyy-MM-dd', {
+          timeZone: DEFAULT_TIMEZONE,
+        }),
+      })
+      .andWhere('season.end_date >= :today', {
+        today: format(pstNow, 'yyyy-MM-dd', {
+          timeZone: DEFAULT_TIMEZONE,
+        }),
+      })
+      .andWhere('slot.start_time >= :currentTime', {
+        currentTime,
+      })
+      .getMany();
   }
 
   create(timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
