@@ -5,7 +5,6 @@ import { IngestionService } from './ingestion.service';
 import { PersonasModule } from '../personas/personas.module';
 import { SeasonsModule } from '../seasons/seasons.module';
 import { ShowsModule } from '../shows/shows.module';
-import { ImageColorModule } from '../image_color/image-color.module';
 
 @Module({
   imports: [
@@ -13,7 +12,6 @@ import { ImageColorModule } from '../image_color/image-color.module';
     SeasonsModule,
     PersonasModule,
     TimeslotsModule,
-    ImageColorModule,
   ],
   providers: [
     IngestionService,

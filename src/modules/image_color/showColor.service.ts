@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
 
 @Injectable()
-export class ImageColorService {
+export class ShowColorService {
   private readonly fallbackColor = {
     r: 128,
     g: 128,
