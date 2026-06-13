@@ -21,6 +21,9 @@ export class Show {
   @Column({ type: 'varchar', nullable: true })
   image_url?: string;
 
+  @Column({ type: 'varchar', length: 7, nullable: true })
+  color?: string;
+
   @CreateDateColumn({
     type: 'date',
   })

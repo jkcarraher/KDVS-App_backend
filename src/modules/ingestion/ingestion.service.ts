@@ -11,6 +11,7 @@ import { DayOfWeek } from "~/shared/types/dotw.enum";
 import { TimeslotKey } from "../timeslots/timeslots.types";
 import { SeasonsService } from "../seasons/seasons.service";
 import { appendZShowTimeslotByShowId, mergeZShowIntoShowMap, recordZShowDOTW } from "./ingestion.helper";
+import { ImageColorService } from "../image_color/image-color.service";
 
 @Injectable()
 export class IngestionService {
@@ -19,6 +20,7 @@ export class IngestionService {
     private readonly seasonsService: SeasonsService,
     private readonly personasService: PersonasService,
     private readonly timeslotService: TimeslotsService,
+    private readonly imageColorService: ImageColorService,
   ) {}
 
   private readonly logger = new Logger(IngestionService.name);
