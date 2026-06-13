@@ -15,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
 import { BootstrapService } from './bootstrap.service';
 import { IngestionModule } from './modules/ingestion/ingestion.module';
+import { ShowColorModule } from './modules/image_color/showColor.module';
 
 
 @Module({
@@ -46,7 +47,8 @@ import { IngestionModule } from './modules/ingestion/ingestion.module';
     TimeslotsModule,
     PersonasModule,
     HealthModule,
-    NotificationModule
+    NotificationModule,
+    ShowColorModule,
   ],
   providers: [
     BootstrapService

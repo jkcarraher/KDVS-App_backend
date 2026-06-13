@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ShowTimeslot } from '~/shared/entities/show-timeslot.entity';
 import { toZonedTime, format } from 'date-fns-tz';
 import { DEFAULT_TIMEZONE } from '~/shared/consts/consts';
+import { Show } from '~/shared/entities/show.entity';
 
 @Injectable()
 export class TimeslotsService {
@@ -112,5 +113,29 @@ export class TimeslotsService {
         return manager.save(ShowTimeslot, newTimeslots);
       },
     );
+  }
+
+  async getAllShowsForThisSeason(): Promise<Show[]> {
+    const today = format(
+      toZonedTime(new Date(), DEFAULT_TIMEZONE),
+      'yyyy-MM-dd',
+      { timeZone: DEFAULT_TIMEZONE },
+    );
+
+    const timeslots = await this.showTimeslotRepository
+      .createQueryBuilder('slot')
+      .leftJoinAndSelect('slot.show', 'show')
+      .leftJoinAndSelect('slot.season', 'season')
+      .where('season.start_date <= :today', { today })
+      .andWhere('season.end_date >= :today', { today })
+      .getMany();
+
+    return [
+      ...new Map(
+        timeslots
+          .filter((slot) => slot.show)
+          .map((slot) => [slot.show.id, slot.show]),
+      ).values(),
+    ];
   }
 }
