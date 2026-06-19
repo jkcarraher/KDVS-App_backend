@@ -5,6 +5,8 @@ import { ShowTimeslot } from '~/shared/entities/show-timeslot.entity';
 import { toZonedTime, format } from 'date-fns-tz';
 import { DEFAULT_TIMEZONE } from '~/shared/consts/consts';
 import { Show } from '~/shared/entities/show.entity';
+import { differenceInCalendarWeeks } from 'date-fns';
+
 
 @Injectable()
 export class TimeslotsService {
@@ -33,21 +35,53 @@ export class TimeslotsService {
     const jsDay = pstNow.getDay();
     const weekday = jsDay === 0 ? 7 : jsDay;
 
-    const currentTime = format(pstNow, 'HH:mm:ss', { timeZone: 'America/Los_Angeles' });
-    const currentDay = format(pstNow, 'yyyy-MM-dd', { timeZone: 'America/Los_Angeles' });
+    const currentTime = format(
+      pstNow,
+      'HH:mm:ss',
+      { timeZone: 'America/Los_Angeles' },
+    );
 
-    const result = await this.showTimeslotRepository
+    const currentDay = format(
+      pstNow,
+      'yyyy-MM-dd',
+      { timeZone: 'America/Los_Angeles' },
+    );
+
+    const candidates = await this.showTimeslotRepository
       .createQueryBuilder('slot')
       .leftJoinAndSelect('slot.show', 'show')
       .leftJoinAndSelect('slot.season', 'season')
       .leftJoinAndSelect('slot.personas', 'personas')
       .where('slot.weekday = :weekday', { weekday })
-      .andWhere(':currentTime BETWEEN slot.start_time AND slot.end_time', { currentTime })
+      .andWhere(
+        ':currentTime BETWEEN slot.start_time AND slot.end_time',
+        { currentTime },
+      )
       .andWhere('season.start_date <= :currentDay', { currentDay })
       .andWhere('season.end_date >= :currentDay', { currentDay })
-      .getOne();
+      .getMany();
 
-    return result ?? null;
+
+    const activeSlot = candidates.find((slot) => {
+      if (!slot.anchor_date || !slot.recurrence_interval_weeks) {
+        return true;
+      }
+
+      const anchor = new Date(slot.anchor_date);
+
+      const weeksSinceAnchor = differenceInCalendarWeeks(
+        pstNow,
+        anchor,
+        { weekStartsOn: 1 },
+      );
+
+      return (
+        weeksSinceAnchor >= 0 &&
+        weeksSinceAnchor % slot.recurrence_interval_weeks === 0
+      );
+    });
+
+    return activeSlot ?? null;
   }
 
   async getUpcomingTimeslots() {
