@@ -11,6 +11,8 @@ Backend service for the KDVS App, providing live programming schedule data, APN 
 
 - Docker
 - Docker Compose
+- APN Key in /secrets
+- ENV Keys
 
 ### 1. Start the application
 
