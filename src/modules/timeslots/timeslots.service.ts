@@ -86,33 +86,49 @@ export class TimeslotsService {
 
   async getUpcomingTimeslots() {
     const now = new Date();
-    const pstNow = toZonedTime(now, DEFAULT_TIMEZONE);
+    const pstNow = toZonedTime(now, 'America/Los_Angeles');
 
-    const currentTime = format(pstNow, 'HH:mm:ss');
-    const weekday = pstNow.getDay() === 0 ? 7 : pstNow.getDay();
+    const jsDay = pstNow.getDay();
+    const weekday = jsDay === 0 ? 7 : jsDay;
 
-    return this.showTimeslotRepository
+    const currentTime = format(pstNow, 'HH:mm:ss', {
+      timeZone: 'America/Los_Angeles',
+    });
+
+    const currentDay = format(pstNow, 'yyyy-MM-dd', {
+      timeZone: 'America/Los_Angeles',
+    });
+
+    const candidates = await this.showTimeslotRepository
       .createQueryBuilder('slot')
       .leftJoinAndSelect('slot.show', 'show')
       .leftJoinAndSelect('slot.season', 'season')
       .leftJoinAndSelect('slot.personas', 'personas')
       .where('slot.weekday = :weekday', { weekday })
-
-      .andWhere('season.start_date <= :today', {
-        today: format(pstNow, 'yyyy-MM-dd', {
-          timeZone: DEFAULT_TIMEZONE,
-        }),
-      })
-      .andWhere('season.end_date >= :today', {
-        today: format(pstNow, 'yyyy-MM-dd', {
-          timeZone: DEFAULT_TIMEZONE,
-        }),
-      })
-      .andWhere('slot.start_time >= :currentTime', {
-        currentTime,
-      })
+      .andWhere('season.start_date <= :currentDay', { currentDay })
+      .andWhere('season.end_date >= :currentDay', { currentDay })
+      .andWhere('slot.start_time >= :currentTime', { currentTime })
       .getMany();
-  }
+
+    return candidates.filter((slot) => {
+      if (!slot.anchor_date || !slot.recurrence_interval_weeks) {
+        return true;
+      }
+
+      const anchor = new Date(slot.anchor_date);
+
+      const weeksSinceAnchor = differenceInCalendarWeeks(
+        pstNow,
+        anchor,
+        { weekStartsOn: 1 },
+      );
+
+      return (
+        weeksSinceAnchor >= 0 &&
+        weeksSinceAnchor % (slot.recurrence_interval_weeks-1) === 0
+      );
+    });
+    }
 
   create(timeslot: Partial<ShowTimeslot>): Promise<ShowTimeslot> {
     const newTimeslot = this.showTimeslotRepository.create(timeslot);
