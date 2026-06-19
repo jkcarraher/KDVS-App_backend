@@ -6,6 +6,8 @@ import { ShowTimeslot } from "~/shared/entities/show-timeslot.entity";
 import { DayOfWeek } from "~/shared/types/dotw.enum";
 import { Season } from "~/shared/entities/season.entity";
 import { Persona } from "~/shared/entities/persona.entity";
+import { formatInTimeZone } from "date-fns-tz";
+import { DEFAULT_TIMEZONE } from "~/shared/consts/consts";
 
 export function zShowToTimeslot(
   season: Season,
@@ -122,7 +124,7 @@ export function appendZShowTimeslotByShowId(
     recurrence_interval_weeks: recurrenceIntervalWeeks,
     recurrence_offset: recurrenceOffset,
     timezone: timeslot.timezone!,
-    anchor_date: item.start.slice(0, 10),
+    anchor_date: formatInTimeZone( item.start, DEFAULT_TIMEZONE, 'yyyy-MM-dd' ),
     personas: timeslot.personas!,
   });
 }
