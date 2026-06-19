@@ -125,7 +125,7 @@ export class TimeslotsService {
 
       return (
         weeksSinceAnchor >= 0 &&
-        weeksSinceAnchor % (slot.recurrence_interval_weeks) === 0
+        weeksSinceAnchor % slot.recurrence_interval_weeks === 0
       );
     });
     }
