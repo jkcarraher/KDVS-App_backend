@@ -75,8 +75,6 @@ export class TimeslotsService {
       .andWhere('season.start_date <= :currentDay', { currentDay })
       .andWhere('season.end_date >= :currentDay', { currentDay })
       .getMany();
-    
-    Logger.log(candidates)
 
     const activeSlot = candidates.find((slot) => {
       if (!slot.anchor_date || !slot.recurrence_interval_weeks) {
