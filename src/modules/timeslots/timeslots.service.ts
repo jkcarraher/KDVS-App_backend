@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShowTimeslot } from '~/shared/entities/show-timeslot.entity';
@@ -30,7 +30,7 @@ export class TimeslotsService {
 
   async findCurrent(): Promise<ShowTimeslot | null> {
     const now = new Date();
-    const pstNow = toZonedTime(now, 'America/Los_Angeles');
+    const pstNow = toZonedTime(now, DEFAULT_TIMEZONE);
 
     const jsDay = pstNow.getDay();
     const weekday = jsDay === 0 ? 7 : jsDay;
@@ -38,13 +38,13 @@ export class TimeslotsService {
     const currentTime = format(
       pstNow,
       'HH:mm:ss',
-      { timeZone: 'America/Los_Angeles' },
+      { timeZone: DEFAULT_TIMEZONE },
     );
 
     const currentDay = format(
       pstNow,
       'yyyy-MM-dd',
-      { timeZone: 'America/Los_Angeles' },
+      { timeZone: DEFAULT_TIMEZONE },
     );
 
     const candidates = await this.showTimeslotRepository
@@ -54,13 +54,29 @@ export class TimeslotsService {
       .leftJoinAndSelect('slot.personas', 'personas')
       .where('slot.weekday = :weekday', { weekday })
       .andWhere(
-        ':currentTime BETWEEN slot.start_time AND slot.end_time',
+        `
+        (
+          (
+            slot.start_time <= slot.end_time
+            AND :currentTime BETWEEN slot.start_time AND slot.end_time
+          )
+          OR
+          (
+            slot.start_time > slot.end_time
+            AND (
+              :currentTime >= slot.start_time
+              OR :currentTime < slot.end_time
+            )
+          )
+        )
+        `,
         { currentTime },
       )
       .andWhere('season.start_date <= :currentDay', { currentDay })
       .andWhere('season.end_date >= :currentDay', { currentDay })
       .getMany();
-
+    
+    Logger.log(candidates)
 
     const activeSlot = candidates.find((slot) => {
       if (!slot.anchor_date || !slot.recurrence_interval_weeks) {
