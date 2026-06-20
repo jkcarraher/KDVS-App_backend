@@ -15,7 +15,7 @@ export const scheduleItemSchema = z.object({
   duration: z.number(),
   timezone: z.string(),
   one_off: z.boolean().nullable().optional(),
-  category: z.string(),
+  category: z.string().nullish(),
   title: z.string(),
   image: z.string().nullable(),
   _links: z.object({
