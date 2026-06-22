@@ -27,6 +27,25 @@ export class TimeslotsService {
       relations: ['personas', 'show', 'season'],
     });
   }
+  
+  findAllActive(): Promise<ShowTimeslot[]> {
+    const now = new Date();
+    const pstNow = toZonedTime(now, DEFAULT_TIMEZONE);
+    const currentDay = format(
+      pstNow,
+      'yyyy-MM-dd',
+      { timeZone: DEFAULT_TIMEZONE },
+    );
+    
+    return this.showTimeslotRepository
+      .createQueryBuilder('slot')
+      .leftJoinAndSelect('slot.show', 'show')
+      .leftJoinAndSelect('slot.season', 'season')
+      .leftJoinAndSelect('slot.personas', 'personas')
+      .where('season.start_date <= :currentDay', { currentDay })
+      .andWhere('season.end_date >= :currentDay', { currentDay })
+      .getMany();
+  }
 
   async findCurrent(): Promise<ShowTimeslot | null> {
     const now = new Date();

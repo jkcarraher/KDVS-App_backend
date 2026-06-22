@@ -10,8 +10,8 @@ export class TimeslotsController {
   constructor(private readonly timeslotsService: TimeslotsService) {}
 
   @Get()
-  findAll(): Promise<ShowTimeslot[]> {
-    return this.timeslotsService.findAll();
+  findAllActive(): Promise<ShowTimeslot[]> {
+    return this.timeslotsService.findAllActive();
   }
 
   @Get('current')
