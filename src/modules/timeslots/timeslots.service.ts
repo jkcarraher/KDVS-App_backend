@@ -27,7 +27,7 @@ export class TimeslotsService {
       relations: ['personas', 'show', 'season'],
     });
   }
-  
+
   findAllActive(): Promise<ShowTimeslot[]> {
     const now = new Date();
     const pstNow = toZonedTime(now, DEFAULT_TIMEZONE);
@@ -44,6 +44,8 @@ export class TimeslotsService {
       .leftJoinAndSelect('slot.personas', 'personas')
       .where('season.start_date <= :currentDay', { currentDay })
       .andWhere('season.end_date >= :currentDay', { currentDay })
+      .orderBy('slot.weekday', 'ASC')
+      .addOrderBy('slot.start_time', 'ASC')
       .getMany();
   }
 
