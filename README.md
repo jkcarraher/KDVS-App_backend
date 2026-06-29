@@ -1,7 +1,7 @@
 # KDVS App Backend
 [![Status](https://api.uptimesignal.io/badge/17c081c2-bc3e-4f67-83a0-72731a8551d9/status.svg)](https://uptimesignal.io/badges)
 [![Uptime](https://api.uptimesignal.io/badge/17c081c2-bc3e-4f67-83a0-72731a8551d9/uptime.svg)](https://uptimesignal.io/badges)
-
+[![Response Time](https://api.uptimesignal.io/badge/17c081c2-bc3e-4f67-83a0-72731a8551d9/response.svg)](https://uptimesignal.io/badges)
 
 Backend service for the KDVS App, providing live programming schedule data, APN (Apple Push Notification) show notifications, listener tracking and analytics.
 
