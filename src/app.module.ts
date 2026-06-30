@@ -16,7 +16,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { BootstrapService } from './bootstrap.service';
 import { IngestionModule } from './modules/ingestion/ingestion.module';
 import { ShowColorModule } from './modules/image_color/showColor.module';
-import { ListenerGateway } from './modules/listenerTracker/listener.gateway';
+import { ListenerModule } from './modules/listenerTracker/listener.module';
 
 
 @Module({
@@ -50,10 +50,10 @@ import { ListenerGateway } from './modules/listenerTracker/listener.gateway';
     HealthModule,
     NotificationModule,
     ShowColorModule,
+    ListenerModule
   ],
   providers: [
     BootstrapService,
-    ListenerGateway
   ]
 })
 export class AppModule {}
