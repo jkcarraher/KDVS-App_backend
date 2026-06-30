@@ -31,6 +31,10 @@ export class ListenerGateway
     );
   }
 
+  public getListenerCount(): number {
+    return this.listeners.size;
+  }
+
   handleConnection(client: Socket) {}
 
   handleDisconnect(client: Socket) {
