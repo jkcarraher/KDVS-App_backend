@@ -14,7 +14,7 @@ export class ListnersController {
 
     return {
       schemaVersion: 1,
-      label: 'listeners',
+      label: 'Current Listeners',
       message: String(count),
       color: count > 0 ? 'brightgreen' : 'red',
     };
